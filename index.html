@@ -1,0 +1,1499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ShadowAndMagi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root {
+  --bg: #14101F;
+  --surface: #1F1830;
+  --surface-2: #261D38;
+  --surface-3: #2E2445;
+  --moonlight: #E8E3F5;
+  --lavender: #9B87C4;
+  --gold: #C9A876;
+  --gold-dim: rgba(201,168,118,0.15);
+  --blue: #7C9CC4;
+  --border: rgba(155,135,196,0.18);
+  --border-hover: rgba(155,135,196,0.35);
+  --danger: #C47C7C;
+  --success: #7CC49B;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--moonlight);
+  font-family: 'Inter', sans-serif;
+  line-height: 1.7;
+  min-height: 100vh;
+}
+a { color: inherit; text-decoration: none; }
+button { cursor: pointer; font-family: 'Inter', sans-serif; }
+input, textarea, select {
+  font-family: 'Inter', sans-serif;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--moonlight);
+  border-radius: 6px;
+  padding: 0.6rem 0.85rem;
+  font-size: 0.9rem;
+  width: 100%;
+  outline: none;
+  transition: border-color 0.2s;
+}
+input:focus, textarea:focus, select:focus { border-color: var(--lavender); }
+select option { background: var(--surface-2); }
+label { font-size: 0.82rem; color: var(--lavender); letter-spacing: 0.05em; text-transform: uppercase; display: block; margin-bottom: 0.4rem; }
+.form-group { margin-bottom: 1.25rem; }
+hr { border: none; border-top: 1px solid var(--border); margin: 1.5rem 0; }
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--surface-3); border-radius: 3px; }
+
+/* ── NAV ── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1.25rem 3rem;
+  background: rgba(20,16,31,0.82);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+}
+.wordmark {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.4rem; font-weight: 500; letter-spacing: 0.04em;
+  cursor: pointer;
+}
+.wordmark em { color: var(--gold); font-style: italic; }
+.navlinks { display: flex; gap: 2rem; list-style: none; }
+.navlinks a {
+  color: var(--lavender); font-size: 0.82rem;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  transition: color 0.2s; cursor: pointer;
+}
+.navlinks a:hover, .navlinks a.active { color: var(--moonlight); }
+.nav-auth { display: flex; align-items: center; gap: 0.75rem; }
+.btn-ghost {
+  background: transparent; color: var(--moonlight);
+  border: 1px solid var(--border); padding: 0.45rem 1.1rem;
+  border-radius: 6px; font-size: 0.82rem; transition: border-color 0.2s;
+}
+.btn-ghost:hover { border-color: var(--border-hover); }
+.btn-primary {
+  background: var(--gold); color: #251C12;
+  border: none; padding: 0.45rem 1.1rem;
+  border-radius: 6px; font-size: 0.82rem; font-weight: 600;
+}
+.btn-primary:hover { opacity: 0.9; }
+.btn-danger {
+  background: transparent; color: var(--danger);
+  border: 1px solid rgba(196,124,124,0.3); padding: 0.45rem 1.1rem;
+  border-radius: 6px; font-size: 0.82rem;
+}
+.avatar-sm {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--gold), var(--lavender));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.75rem; font-weight: 600; color: #1A1428;
+  cursor: pointer; overflow: hidden; flex-shrink: 0;
+}
+.avatar-sm img { width: 100%; height: 100%; object-fit: cover; }
+
+/* ── PAGE WRAPPER ── */
+#app { padding-top: 72px; }
+.page { display: none; }
+.page.active { display: block; }
+
+/* ── HERO / SKY ── */
+.sky {
+  position: relative; min-height: 90vh; overflow: hidden;
+  display: flex; flex-direction: column; justify-content: center; align-items: center;
+  text-align: center;
+  background: radial-gradient(ellipse 130% 80% at 50% -5%, #2A2045 0%, #1A1428 50%, #14101F 100%);
+}
+.stars {
+  position: absolute; inset: 0; pointer-events: none;
+  background-image:
+    radial-gradient(1.5px 1.5px at 20px 30px, rgba(232,227,245,0.9), transparent),
+    radial-gradient(1px 1px at 90px 80px, rgba(232,227,245,0.7), transparent),
+    radial-gradient(1.5px 1.5px at 160px 50px, rgba(201,168,118,0.8), transparent),
+    radial-gradient(1px 1px at 230px 120px, rgba(232,227,245,0.6), transparent),
+    radial-gradient(1.5px 1.5px at 300px 20px, rgba(232,227,245,0.8), transparent),
+    radial-gradient(1px 1px at 40px 160px, rgba(155,135,196,0.7), transparent),
+    radial-gradient(1.5px 1.5px at 340px 180px, rgba(232,227,245,0.9), transparent),
+    radial-gradient(1px 1px at 120px 200px, rgba(201,168,118,0.6), transparent),
+    radial-gradient(1.5px 1.5px at 380px 100px, rgba(232,227,245,0.7), transparent),
+    radial-gradient(1px 1px at 60px 240px, rgba(232,227,245,0.5), transparent),
+    radial-gradient(1px 1px at 200px 280px, rgba(155,135,196,0.6), transparent),
+    radial-gradient(1.5px 1.5px at 450px 60px, rgba(232,227,245,0.8), transparent);
+  background-repeat: repeat;
+  background-size: 500px 320px;
+  animation: drift 120s linear infinite;
+}
+@keyframes drift { from { background-position: 0 0; } to { background-position: -500px 320px; } }
+@media (prefers-reduced-motion: reduce) { .stars { animation: none; } }
+.hero-inner { position: relative; z-index: 2; padding: 6rem 2rem; max-width: 700px; }
+.eyebrow {
+  color: var(--gold); font-size: 0.75rem; letter-spacing: 0.2em;
+  text-transform: uppercase; margin-bottom: 1.5rem; opacity: 0.85;
+}
+h1 {
+  font-family: 'Cormorant Garamond', serif; font-weight: 500;
+  font-size: clamp(2.5rem, 5.5vw, 4rem); line-height: 1.1; color: var(--moonlight);
+}
+h1 .it { font-style: italic; color: var(--gold); }
+.hero-sub { margin-top: 1.5rem; color: var(--lavender); font-size: 1rem; max-width: 48ch; margin-left: auto; margin-right: auto; }
+.hero-cta { margin-top: 2.5rem; display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+.btn-hero {
+  background: var(--gold); color: #251C12; border: none;
+  padding: 0.9rem 2rem; border-radius: 6px; font-size: 0.92rem; font-weight: 600;
+}
+.btn-hero-ghost {
+  background: transparent; color: var(--moonlight);
+  border: 1px solid var(--border); padding: 0.9rem 2rem; border-radius: 6px; font-size: 0.92rem;
+}
+
+/* ── SECTIONS ── */
+.section { max-width: 1100px; margin: 0 auto; padding: 5rem 2rem; }
+.section-title {
+  font-family: 'Cormorant Garamond', serif; font-weight: 500;
+  font-size: 2rem; margin-bottom: 0.4rem;
+}
+.section-sub { color: var(--lavender); font-size: 0.9rem; margin-bottom: 2.5rem; }
+.divider { border: none; border-top: 1px solid var(--border); margin: 0; }
+
+/* ── HOME GRID ── */
+.home-grid { display: grid; grid-template-columns: 1fr 1.5fr; gap: 2.5rem; align-items: start; }
+.author-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; padding: 2rem;
+}
+.author-avatar {
+  width: 60px; height: 60px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--gold), var(--lavender));
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; color: #1A1428; font-weight: 600;
+  margin-bottom: 1.25rem;
+}
+.author-card h3 { font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; font-weight: 500; margin-bottom: 0.6rem; }
+.author-card p { color: var(--lavender); font-size: 0.93rem; }
+.noticeboard {
+  background: var(--surface-2); border: 1px solid var(--border);
+  border-radius: 10px; padding: 2rem; min-height: 200px;
+}
+.noticeboard-header {
+  display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem;
+}
+.noticeboard h3 { font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; font-weight: 500; }
+.notice-empty { color: var(--lavender); font-size: 0.9rem; font-style: italic; text-align: center; padding: 2rem 0; }
+.notice-item {
+  border-left: 2px solid var(--gold); padding: 0.75rem 1rem;
+  margin-bottom: 0.75rem; background: rgba(201,168,118,0.05); border-radius: 0 6px 6px 0;
+}
+.notice-item p { font-size: 0.92rem; }
+.notice-item time { font-size: 0.78rem; color: var(--lavender); margin-top: 0.25rem; display: block; }
+
+/* ── NOVELS PAGE ── */
+.series-block { margin-bottom: 3.5rem; }
+.series-title {
+  font-family: 'Cormorant Garamond', serif; font-weight: 500; font-size: 1.6rem;
+  margin-bottom: 0.4rem; display: flex; align-items: center; gap: 0.75rem;
+}
+.series-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.series-desc { color: var(--lavender); font-size: 0.9rem; margin-bottom: 1.75rem; }
+.novel-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1.75rem; }
+.novel-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; overflow: hidden; cursor: pointer;
+  transition: border-color 0.2s, transform 0.2s;
+}
+.novel-card:hover { border-color: var(--border-hover); transform: translateY(-3px); }
+.novel-cover {
+  width: 100%; aspect-ratio: 2/3; object-fit: cover;
+  background: var(--surface-2); display: flex; align-items: center; justify-content: center;
+}
+.novel-cover-placeholder {
+  width: 100%; aspect-ratio: 2/3; background: var(--surface-2);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Cormorant Garamond', serif; font-size: 2.5rem; color: var(--lavender);
+}
+.novel-info { padding: 1rem; }
+.novel-info h4 { font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; font-weight: 500; margin-bottom: 0.25rem; }
+.novel-status {
+  font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--gold); opacity: 0.8;
+}
+
+/* ── NOVEL DETAIL ── */
+.novel-detail-hero {
+  display: grid; grid-template-columns: 240px 1fr; gap: 3rem;
+  align-items: start; margin-bottom: 3rem;
+}
+.novel-detail-cover {
+  width: 240px; aspect-ratio: 2/3; object-fit: cover;
+  border-radius: 8px; background: var(--surface-2);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Cormorant Garamond', serif; font-size: 4rem; color: var(--lavender);
+}
+.novel-detail-cover img { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; }
+.novel-detail-meta h2 {
+  font-family: 'Cormorant Garamond', serif; font-weight: 500;
+  font-size: clamp(1.8rem, 3.5vw, 2.8rem); line-height: 1.15; margin-bottom: 0.5rem;
+}
+.novel-detail-meta .series-tag {
+  font-size: 0.78rem; color: var(--gold); letter-spacing: 0.1em;
+  text-transform: uppercase; margin-bottom: 1rem; display: block;
+}
+.synopsis { color: var(--lavender); font-size: 0.97rem; line-height: 1.8; margin-bottom: 1.5rem; }
+.subscribe-row { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
+.btn-subscribe {
+  background: transparent; border: 1px solid var(--gold);
+  color: var(--gold); padding: 0.5rem 1.25rem; border-radius: 6px; font-size: 0.85rem;
+  transition: background 0.2s;
+}
+.btn-subscribe:hover, .btn-subscribe.subscribed { background: var(--gold-dim); }
+.chapter-list { margin-top: 2rem; }
+.chapter-list h3 { font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; font-weight: 500; margin-bottom: 1rem; }
+.chapter-item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0.85rem 1rem; border-radius: 8px; cursor: pointer;
+  transition: background 0.15s; border-bottom: 1px solid var(--border);
+}
+.chapter-item:hover { background: var(--surface); }
+.chapter-item:last-child { border-bottom: none; }
+.chapter-num { font-size: 0.78rem; color: var(--lavender); min-width: 3.5rem; }
+.chapter-title { flex: 1; font-size: 0.95rem; }
+.chapter-pov { font-size: 0.78rem; color: var(--gold); opacity: 0.75; }
+
+/* ── CHAPTER READER ── */
+.reader-header {
+  max-width: 780px; margin: 0 auto 2rem; padding: 0 2rem;
+  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;
+}
+.reader-breadcrumb { font-size: 0.82rem; color: var(--lavender); }
+.reader-breadcrumb span { cursor: pointer; }
+.reader-breadcrumb span:hover { color: var(--moonlight); }
+.reader-controls { display: flex; gap: 0.5rem; }
+.btn-icon {
+  background: var(--surface); border: 1px solid var(--border);
+  color: var(--lavender); width: 36px; height: 36px; border-radius: 6px;
+  display: flex; align-items: center; justify-content: center; font-size: 0.85rem;
+}
+.btn-icon:hover { border-color: var(--border-hover); color: var(--moonlight); }
+.reader-meta {
+  max-width: 780px; margin: 0 auto 3rem; padding: 0 2rem; text-align: center;
+}
+.reader-pov { font-size: 0.78rem; color: var(--gold); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.75rem; }
+.reader-title {
+  font-family: 'Cormorant Garamond', serif; font-weight: 500;
+  font-size: clamp(1.8rem, 3.5vw, 2.5rem); margin-bottom: 0.5rem;
+}
+.reader-chapter-num { font-size: 0.85rem; color: var(--lavender); }
+.reader-body {
+  max-width: 680px; margin: 0 auto; padding: 0 2rem;
+  font-size: 1.08rem; line-height: 1.95; color: var(--moonlight);
+}
+.reader-body p { margin-bottom: 1.5rem; }
+.reader-nav {
+  max-width: 680px; margin: 4rem auto 0; padding: 2rem;
+  display: flex; justify-content: space-between; gap: 1rem;
+  border-top: 1px solid var(--border);
+}
+.reader-nav button {
+  background: var(--surface); border: 1px solid var(--border);
+  color: var(--moonlight); padding: 0.65rem 1.25rem; border-radius: 6px; font-size: 0.88rem;
+}
+.reader-nav button:hover { border-color: var(--border-hover); }
+
+/* ── FONT PANEL ── */
+.font-panel {
+  position: fixed; top: 80px; right: 1.5rem; z-index: 50;
+  background: var(--surface-2); border: 1px solid var(--border);
+  border-radius: 10px; padding: 1.25rem; width: 260px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  display: none;
+}
+.font-panel.open { display: block; }
+.font-panel h4 { font-size: 0.82rem; color: var(--lavender); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem; }
+.font-option {
+  padding: 0.6rem 0.75rem; border-radius: 6px; cursor: pointer;
+  font-size: 0.92rem; transition: background 0.15s; border: 1px solid transparent;
+}
+.font-option:hover { background: var(--surface-3); }
+.font-option.selected { border-color: var(--gold); background: var(--gold-dim); }
+.size-row { display: flex; align-items: center; gap: 0.75rem; margin-top: 1rem; }
+.size-btn {
+  background: var(--surface); border: 1px solid var(--border);
+  color: var(--moonlight); width: 32px; height: 32px; border-radius: 6px; font-size: 0.9rem;
+}
+.size-label { font-size: 0.82rem; color: var(--lavender); flex: 1; text-align: center; }
+
+/* ── COMMENTS ── */
+.comments-section { max-width: 780px; margin: 0 auto; padding: 3rem 2rem; }
+.comments-section h3 { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; font-weight: 500; margin-bottom: 1.5rem; }
+.comment-sort { display: flex; gap: 0.5rem; margin-bottom: 1.75rem; flex-wrap: wrap; }
+.sort-btn {
+  background: transparent; border: 1px solid var(--border);
+  color: var(--lavender); padding: 0.4rem 0.9rem; border-radius: 20px; font-size: 0.8rem;
+  transition: all 0.15s;
+}
+.sort-btn:hover, .sort-btn.active { border-color: var(--lavender); color: var(--moonlight); background: rgba(155,135,196,0.1); }
+.comment-form { margin-bottom: 2rem; }
+.comment-form textarea { resize: vertical; min-height: 90px; }
+.comment-form-footer { display: flex; justify-content: flex-end; margin-top: 0.75rem; }
+.login-prompt {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 8px; padding: 1.25rem; text-align: center;
+  color: var(--lavender); font-size: 0.9rem; margin-bottom: 2rem;
+}
+.login-prompt button { color: var(--gold); background: none; border: none; font-size: 0.9rem; cursor: pointer; }
+.comment-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; padding: 1.25rem; margin-bottom: 1rem;
+}
+.comment-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; }
+.comment-name { font-weight: 500; font-size: 0.92rem; }
+.author-badge {
+  background: var(--gold-dim); border: 1px solid rgba(201,168,118,0.4);
+  color: var(--gold); font-size: 0.68rem; letter-spacing: 0.08em;
+  text-transform: uppercase; padding: 0.15rem 0.5rem; border-radius: 4px;
+}
+.comment-time { font-size: 0.78rem; color: var(--lavender); margin-left: auto; }
+.comment-body { font-size: 0.93rem; line-height: 1.7; margin-bottom: 0.85rem; }
+.comment-actions { display: flex; align-items: center; gap: 0.6rem; }
+.reaction-btn {
+  background: transparent; border: 1px solid var(--border);
+  color: var(--lavender); padding: 0.3rem 0.75rem; border-radius: 20px; font-size: 0.78rem;
+  display: flex; align-items: center; gap: 0.4rem; transition: all 0.15s;
+}
+.reaction-btn:hover { border-color: var(--border-hover); color: var(--moonlight); }
+.reaction-btn.agree.active { border-color: var(--success); color: var(--success); background: rgba(124,196,155,0.1); }
+.reaction-btn.disagree.active { border-color: var(--danger); color: var(--danger); background: rgba(196,124,124,0.1); }
+.delete-comment-btn { background: none; border: none; color: var(--lavender); font-size: 0.78rem; margin-left: auto; opacity: 0.6; }
+.delete-comment-btn:hover { color: var(--danger); opacity: 1; }
+
+/* ── AUTH MODAL ── */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 200;
+  background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);
+  display: flex; align-items: center; justify-content: center;
+  display: none;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 12px; padding: 2rem; width: min(420px, 92vw);
+}
+.modal h2 { font-family: 'Cormorant Garamond', serif; font-size: 1.7rem; font-weight: 500; margin-bottom: 0.4rem; }
+.modal-sub { color: var(--lavender); font-size: 0.88rem; margin-bottom: 1.75rem; }
+.modal-footer { text-align: center; margin-top: 1rem; font-size: 0.85rem; color: var(--lavender); }
+.modal-footer button { color: var(--gold); background: none; border: none; font-size: 0.85rem; cursor: pointer; }
+.modal-close { float: right; background: none; border: none; color: var(--lavender); font-size: 1.2rem; cursor: pointer; }
+.error-msg { color: var(--danger); font-size: 0.85rem; margin-bottom: 1rem; display: none; }
+.error-msg.show { display: block; }
+
+/* ── ADMIN ── */
+.admin-layout { display: grid; grid-template-columns: 220px 1fr; gap: 2rem; max-width: 1100px; margin: 0 auto; padding: 2rem; }
+.admin-nav { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1rem; align-self: start; }
+.admin-nav h3 { font-size: 0.75rem; color: var(--lavender); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.75rem; padding: 0 0.5rem; }
+.admin-link {
+  display: block; padding: 0.6rem 0.75rem; border-radius: 6px; font-size: 0.88rem;
+  color: var(--lavender); cursor: pointer; transition: all 0.15s;
+}
+.admin-link:hover, .admin-link.active { background: var(--surface-2); color: var(--moonlight); }
+.admin-panel { display: none; }
+.admin-panel.active { display: block; }
+.admin-panel h2 { font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; font-weight: 500; margin-bottom: 0.4rem; }
+.admin-panel .panel-sub { color: var(--lavender); font-size: 0.88rem; margin-bottom: 1.75rem; }
+.admin-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1.5rem; margin-bottom: 1rem; }
+.admin-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem; }
+.admin-card h4 { font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; font-weight: 500; }
+.admin-card-actions { display: flex; gap: 0.5rem; }
+.btn-sm {
+  background: transparent; border: 1px solid var(--border);
+  color: var(--lavender); padding: 0.3rem 0.75rem; border-radius: 5px; font-size: 0.78rem;
+  transition: all 0.15s;
+}
+.btn-sm:hover { border-color: var(--border-hover); color: var(--moonlight); }
+.btn-sm.danger { border-color: rgba(196,124,124,0.3); color: var(--danger); }
+.font-picker-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; max-height: 260px; overflow-y: auto; margin-top: 0.5rem; }
+.font-pick-option {
+  padding: 0.5rem 0.75rem; border: 1px solid var(--border); border-radius: 6px;
+  cursor: pointer; font-size: 0.9rem; transition: all 0.15s; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;
+}
+.font-pick-option:hover { border-color: var(--border-hover); }
+.font-pick-option.selected { border-color: var(--gold); background: var(--gold-dim); }
+.font-search { margin-bottom: 0.5rem; }
+.tag { display: inline-block; background: var(--surface-3); border-radius: 4px; padding: 0.15rem 0.5rem; font-size: 0.75rem; color: var(--lavender); margin-right: 0.4rem; }
+.toast {
+  position: fixed; bottom: 2rem; right: 2rem; z-index: 300;
+  background: var(--surface-2); border: 1px solid var(--border);
+  border-radius: 8px; padding: 0.85rem 1.25rem; font-size: 0.88rem;
+  transform: translateY(100px); opacity: 0; transition: all 0.3s;
+}
+.toast.show { transform: translateY(0); opacity: 1; }
+.toast.success { border-color: rgba(124,196,155,0.4); color: var(--success); }
+.toast.error { border-color: rgba(196,124,124,0.4); color: var(--danger); }
+.empty-state { text-align: center; padding: 3rem 1rem; color: var(--lavender); }
+.empty-state p { font-style: italic; font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; }
+.loading { text-align: center; padding: 3rem; color: var(--lavender); font-style: italic; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  nav { padding: 1rem 1.25rem; }
+  .navlinks { display: none; }
+  .home-grid { grid-template-columns: 1fr; }
+  .novel-detail-hero { grid-template-columns: 1fr; }
+  .novel-detail-cover { width: 160px; }
+  .admin-layout { grid-template-columns: 1fr; }
+  .section { padding: 3rem 1.25rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="wordmark" onclick="navigate('home')">Shadow<em>And</em>Magi</div>
+  <ul class="navlinks">
+    <li><a id="nav-home" class="active" onclick="navigate('home')">Home</a></li>
+    <li><a id="nav-novels" onclick="navigate('novels')">Novels</a></li>
+    <li><a id="nav-about" onclick="navigate('about')">About</a></li>
+  </ul>
+  <div class="nav-auth" id="nav-auth">
+    <button class="btn-ghost" onclick="openAuth('signin')">Sign in</button>
+    <button class="btn-primary" onclick="openAuth('signup')">Join</button>
+  </div>
+</nav>
+
+<div id="app">
+
+  <!-- HOME PAGE -->
+  <div id="page-home" class="page active">
+    <div class="sky">
+      <div class="stars"></div>
+      <div class="hero-inner">
+        <div class="eyebrow">a quiet corner between dusk and dawn</div>
+        <h1>Stories written in the <span class="it">space</span> where shadow meets magic</h1>
+        <p class="hero-sub">I'm ShadowAndMagi — I write fantasy that lives in the in-between hours. This is where I share it, free for anyone who wants to read.</p>
+        <div class="hero-cta">
+          <button class="btn-hero" onclick="navigate('novels')">Start reading</button>
+          <button class="btn-hero-ghost" onclick="navigate('about')">About the author</button>
+        </div>
+      </div>
+    </div>
+    <hr class="divider">
+    <div class="section">
+      <div class="home-grid">
+        <div class="author-card">
+          <div class="author-avatar">SM</div>
+          <h3>Hello, reader</h3>
+          <p id="author-bio">I've always believed stories should be free to find the people who need them. So that's what this place is — no paywalls, no chapter limits, just the work. New chapters go up as I finish them. Thank you for being here.</p>
+        </div>
+        <div class="noticeboard">
+          <div class="noticeboard-header">
+            <h3>Notice board</h3>
+            <button class="btn-sm" id="add-notice-btn" style="display:none" onclick="showAddNotice()">+ Post</button>
+          </div>
+          <div id="notices-list"><div class="notice-empty">Nothing posted yet — check back soon.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- NOVELS PAGE -->
+  <div id="page-novels" class="page">
+    <div class="section">
+      <h2 class="section-title">Novels</h2>
+      <p class="section-sub">Browse by series or dive straight in.</p>
+      <div id="series-list"><div class="loading">Loading…</div></div>
+    </div>
+  </div>
+
+  <!-- NOVEL DETAIL PAGE -->
+  <div id="page-novel" class="page">
+    <div class="section" id="novel-detail-content"></div>
+  </div>
+
+  <!-- CHAPTER READER PAGE -->
+  <div id="page-chapter" class="page">
+    <div id="reader-content" style="padding: 2rem 0;"></div>
+  </div>
+
+  <!-- ABOUT PAGE -->
+  <div id="page-about" class="page">
+    <div class="sky" style="min-height:45vh;">
+      <div class="stars"></div>
+      <div class="hero-inner" style="padding:4rem 2rem;">
+        <div class="eyebrow">the author</div>
+        <h1>Shadow<span class="it">And</span>Magi</h1>
+      </div>
+    </div>
+    <div class="section" style="max-width:700px;">
+      <p style="color:var(--lavender); font-size:1rem; line-height:1.9;" id="about-bio">
+        Bio coming soon.
+      </p>
+    </div>
+  </div>
+
+  <!-- ADMIN PAGE -->
+  <div id="page-admin" class="page">
+    <div class="admin-layout">
+      <div>
+        <div class="admin-nav">
+          <h3>Admin</h3>
+          <a class="admin-link active" onclick="showAdminPanel('series')">Series</a>
+          <a class="admin-link" onclick="showAdminPanel('novels')">Novels</a>
+          <a class="admin-link" onclick="showAdminPanel('characters')">Characters</a>
+          <a class="admin-link" onclick="showAdminPanel('chapters')">Chapters</a>
+          <a class="admin-link" onclick="showAdminPanel('notices')">Notice Board</a>
+        </div>
+      </div>
+      <div>
+        <!-- SERIES PANEL -->
+        <div id="admin-series" class="admin-panel active">
+          <h2>Series</h2>
+          <p class="panel-sub">Manage your story series and collections.</p>
+          <button class="btn-primary" style="margin-bottom:1.5rem" onclick="openSeriesForm()">+ New Series</button>
+          <div id="series-admin-list"></div>
+        </div>
+        <!-- NOVELS PANEL -->
+        <div id="admin-novels" class="admin-panel">
+          <h2>Novels</h2>
+          <p class="panel-sub">Add and manage individual novels.</p>
+          <button class="btn-primary" style="margin-bottom:1.5rem" onclick="openNovelForm()">+ New Novel</button>
+          <div id="novels-admin-list"></div>
+        </div>
+        <!-- CHARACTERS PANEL -->
+        <div id="admin-characters" class="admin-panel">
+          <h2>Characters</h2>
+          <p class="panel-sub">Define POV characters and their fonts.</p>
+          <button class="btn-primary" style="margin-bottom:1.5rem" onclick="openCharacterForm()">+ New Character</button>
+          <div id="characters-admin-list"></div>
+        </div>
+        <!-- CHAPTERS PANEL -->
+        <div id="admin-chapters" class="admin-panel">
+          <h2>Chapters</h2>
+          <p class="panel-sub">Write and publish chapters.</p>
+          <button class="btn-primary" style="margin-bottom:1.5rem" onclick="openChapterForm()">+ New Chapter</button>
+          <div id="chapters-admin-list"></div>
+        </div>
+        <!-- NOTICES PANEL -->
+        <div id="admin-notices" class="admin-panel">
+          <h2>Notice Board</h2>
+          <p class="panel-sub">Post announcements to your homepage.</p>
+          <button class="btn-primary" style="margin-bottom:1.5rem" onclick="openNoticeForm()">+ New Notice</button>
+          <div id="notices-admin-list"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- AUTH MODAL -->
+<div class="modal-overlay" id="auth-modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeAuth()">✕</button>
+    <h2 id="auth-title">Welcome back</h2>
+    <p class="modal-sub" id="auth-sub">Sign in to join the conversation.</p>
+    <div class="error-msg" id="auth-error"></div>
+    <div id="auth-name-group" class="form-group" style="display:none">
+      <label>Display name</label>
+      <input type="text" id="auth-name" placeholder="How you'll appear to others">
+    </div>
+    <div class="form-group">
+      <label>Email</label>
+      <input type="email" id="auth-email" placeholder="your@email.com">
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" id="auth-password" placeholder="••••••••">
+    </div>
+    <button class="btn-primary" style="width:100%;padding:0.75rem" id="auth-submit" onclick="submitAuth()">Sign in</button>
+    <div class="modal-footer" id="auth-toggle">
+      Don't have an account? <button onclick="toggleAuth()">Join for free</button>
+    </div>
+  </div>
+</div>
+
+<!-- GENERIC FORM MODAL -->
+<div class="modal-overlay" id="form-modal">
+  <div class="modal" style="max-height:90vh;overflow-y:auto;width:min(560px,94vw)">
+    <button class="modal-close" onclick="closeFormModal()">✕</button>
+    <h2 id="form-modal-title">Form</h2>
+    <p class="modal-sub" id="form-modal-sub"></p>
+    <div id="form-modal-body"></div>
+    <div style="display:flex;gap:0.75rem;justify-content:flex-end;margin-top:1.25rem">
+      <button class="btn-ghost" onclick="closeFormModal()">Cancel</button>
+      <button class="btn-primary" id="form-modal-submit" onclick="submitFormModal()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- FONT PANEL -->
+<div class="font-panel" id="font-panel">
+  <h4>Reading font</h4>
+  <div id="font-options"></div>
+  <div class="size-row">
+    <button class="size-btn" onclick="changeFontSize(-1)">A−</button>
+    <span class="size-label" id="size-label">Medium</span>
+    <button class="size-btn" onclick="changeFontSize(1)">A+</button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+const SUPABASE_URL = 'https://kmlczdtqsvcjffkrvphu.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_LBmvnUa8n2c2Txfzb1RYrA_IIYBG-Dp';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// ── STATE ──
+let currentUser = null;
+let currentProfile = null;
+let currentNovel = null;
+let currentChapter = null;
+let readerFont = localStorage.getItem('readerFont') || null;
+let readerFontSize = parseInt(localStorage.getItem('readerFontSize') || '2');
+let authMode = 'signin';
+let formModalCallback = null;
+let loadedFonts = new Set();
+
+const fontSizes = ['0.92rem','1rem','1.08rem','1.18rem','1.3rem'];
+const fontSizeLabels = ['Small','Compact','Medium','Large','Extra large'];
+
+const readerFontOptions = [
+  { name: 'System default', value: 'Inter, sans-serif' },
+  { name: 'Serif', value: "'Cormorant Garamond', serif" },
+  { name: 'Georgia', value: 'Georgia, serif' },
+  { name: 'Palatino', value: "'Palatino Linotype', serif" },
+  { name: 'Courier', value: "'Courier New', monospace" },
+  { name: 'OpenDyslexic', value: 'OpenDyslexic, sans-serif' },
+];
+
+// ── INIT ──
+(async () => {
+  const { data: { session } } = await sb.auth.getSession();
+  if (session) await onLogin(session.user);
+  sb.auth.onAuthStateChange(async (event, session) => {
+    if (session) await onLogin(session.user);
+    else onLogout();
+  });
+  await loadNotices();
+  navigate('home');
+})();
+
+async function onLogin(user) {
+  currentUser = user;
+  const { data } = await sb.from('profiles').select('*').eq('id', user.id).single();
+  currentProfile = data;
+  renderNav();
+}
+
+function onLogout() {
+  currentUser = null; currentProfile = null;
+  renderNav();
+}
+
+function renderNav() {
+  const el = document.getElementById('nav-auth');
+  if (currentProfile) {
+    const initials = currentProfile.display_name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+    el.innerHTML = `
+      <div class="avatar-sm" onclick="toggleUserMenu()" title="${currentProfile.display_name}">
+        ${currentProfile.avatar_url ? `<img src="${currentProfile.avatar_url}" alt="">` : initials}
+      </div>
+      ${currentProfile.is_author ? `<button class="btn-ghost" onclick="navigate('admin')">Admin</button>` : ''}
+      <button class="btn-ghost" onclick="signOut()">Sign out</button>
+    `;
+    if (currentProfile.is_author) {
+      document.getElementById('add-notice-btn').style.display = 'inline-flex';
+    }
+  } else {
+    el.innerHTML = `
+      <button class="btn-ghost" onclick="openAuth('signin')">Sign in</button>
+      <button class="btn-primary" onclick="openAuth('signup')">Join</button>
+    `;
+    document.getElementById('add-notice-btn').style.display = 'none';
+  }
+}
+
+// ── NAVIGATION ──
+function navigate(page, data) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.navlinks a').forEach(a => a.classList.remove('active'));
+  const el = document.getElementById(`page-${page}`);
+  if (el) { el.classList.add('active'); window.scrollTo(0,0); }
+  const navEl = document.getElementById(`nav-${page}`);
+  if (navEl) navEl.classList.add('active');
+  if (page === 'novels') loadNovelsPage();
+  if (page === 'novel' && data) loadNovelDetail(data);
+  if (page === 'chapter' && data) loadChapter(data);
+  if (page === 'admin') loadAdminPage();
+}
+
+// ── NOTICES ──
+async function loadNotices() {
+  const { data } = await sb.from('notices').select('*').order('created_at', { ascending: false });
+  const el = document.getElementById('notices-list');
+  if (!data || data.length === 0) {
+    el.innerHTML = '<div class="notice-empty">Nothing posted yet — check back soon.</div>';
+    return;
+  }
+  el.innerHTML = data.map(n => `
+    <div class="notice-item">
+      <p>${escapeHtml(n.body)}</p>
+      <time>${formatDate(n.created_at)}</time>
+    </div>
+  `).join('');
+}
+
+// ── NOVELS PAGE ──
+async function loadNovelsPage() {
+  const el = document.getElementById('series-list');
+  el.innerHTML = '<div class="loading">Loading…</div>';
+  const { data: series } = await sb.from('series').select('*').order('sort_order');
+  const { data: novels } = await sb.from('novels').select('*').order('sort_order');
+  if (!series || series.length === 0) {
+    el.innerHTML = '<div class="empty-state"><p>No novels yet — check back soon.</p></div>';
+    return;
+  }
+  el.innerHTML = series.map(s => {
+    const sNovels = (novels || []).filter(n => n.series_id === s.id);
+    return `
+      <div class="series-block">
+        <div class="series-title">${escapeHtml(s.title)}</div>
+        ${s.description ? `<p class="series-desc">${escapeHtml(s.description)}</p>` : ''}
+        <div class="novel-grid">
+          ${sNovels.length === 0
+            ? '<p style="color:var(--lavender);font-size:0.9rem">Coming soon.</p>'
+            : sNovels.map(n => `
+              <div class="novel-card" onclick="navigate('novel', '${n.id}')">
+                <div class="novel-cover-placeholder">✦</div>
+                ${n.cover_url ? `<img class="novel-cover" src="${n.cover_url}" alt="${escapeHtml(n.title)}">` : ''}
+                <div class="novel-info">
+                  <h4>${escapeHtml(n.title)}</h4>
+                  <div class="novel-status">${n.status}</div>
+                </div>
+              </div>
+            `).join('')}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ── NOVEL DETAIL ──
+async function loadNovelDetail(novelId) {
+  const el = document.getElementById('novel-detail-content');
+  el.innerHTML = '<div class="loading">Loading…</div>';
+  const { data: novel } = await sb.from('novels').select('*, series(title)').eq('id', novelId).single();
+  const { data: chapters } = await sb.from('chapters').select('*, characters(name)').eq('novel_id', novelId).eq('published', true).order('chapter_number');
+  currentNovel = novel;
+  let subStatus = await getSubscribeStatus();
+  el.innerHTML = `
+    <div class="novel-detail-hero">
+      <div class="novel-detail-cover">
+        ${novel.cover_url ? `<img src="${novel.cover_url}" alt="${escapeHtml(novel.title)}">` : '✦'}
+      </div>
+      <div class="novel-detail-meta">
+        ${novel.series ? `<span class="series-tag">${escapeHtml(novel.series.title)}</span>` : ''}
+        <h2>${escapeHtml(novel.title)}</h2>
+        ${novel.synopsis ? `<p class="synopsis">${escapeHtml(novel.synopsis)}</p>` : ''}
+        <div class="subscribe-row">
+          <span class="tag">${novel.status}</span>
+          ${novel.genre ? `<span class="tag">${novel.genre}</span>` : ''}
+          ${currentUser ? `
+            <button class="btn-subscribe ${subStatus ? 'subscribed' : ''}" id="sub-btn" onclick="toggleSubscribe()">
+              ${subStatus ? '✓ Subscribed' : '☆ Subscribe'}
+            </button>
+          ` : `<button class="btn-subscribe" onclick="openAuth('signup')">☆ Subscribe</button>`}
+        </div>
+      </div>
+    </div>
+    <hr class="divider">
+    <div class="chapter-list">
+      <h3>Chapters</h3>
+      ${!chapters || chapters.length === 0
+        ? '<div class="empty-state"><p>No chapters yet — coming soon.</p></div>'
+        : chapters.map(c => `
+          <div class="chapter-item" onclick="navigate('chapter', '${c.id}')">
+            <span class="chapter-num">Ch. ${c.chapter_number}</span>
+            <span class="chapter-title">${escapeHtml(c.title)}</span>
+            ${c.characters ? `<span class="chapter-pov">${escapeHtml(c.characters.name)}</span>` : ''}
+          </div>
+        `).join('')}
+    </div>
+  `;
+  renderNovelComments(novelId);
+}
+
+async function getSubscribeStatus() {
+  if (!currentUser) return false;
+  const { data } = await sb.from('subscriptions').select('user_id').eq('user_id', currentUser.id).single();
+  return !!data;
+}
+
+async function toggleSubscribe() {
+  if (!currentUser) { openAuth('signup'); return; }
+  const { data } = await sb.from('subscriptions').select('user_id').eq('user_id', currentUser.id).single();
+  if (data) {
+    await sb.from('subscriptions').delete().eq('user_id', currentUser.id);
+    document.getElementById('sub-btn').textContent = '☆ Subscribe';
+    document.getElementById('sub-btn').classList.remove('subscribed');
+    showToast('Unsubscribed', 'success');
+  } else {
+    await sb.from('subscriptions').insert({ user_id: currentUser.id });
+    document.getElementById('sub-btn').textContent = '✓ Subscribed';
+    document.getElementById('sub-btn').classList.add('subscribed');
+    showToast('Subscribed! You\'ll hear about new chapters.', 'success');
+  }
+}
+
+// ── CHAPTER READER ──
+async function loadChapter(chapterId) {
+  const el = document.getElementById('reader-content');
+  el.innerHTML = '<div class="loading">Loading…</div>';
+  const { data: chapter } = await sb.from('chapters').select('*, novels(id, title, series(title)), characters(name)').eq('id', chapterId).single();
+  const { data: allChapters } = await sb.from('chapters').select('id, chapter_number, title').eq('novel_id', chapter.novel_id).eq('published', true).order('chapter_number');
+  currentChapter = chapter;
+  const idx = allChapters.findIndex(c => c.id === chapterId);
+  const prev = idx > 0 ? allChapters[idx - 1] : null;
+  const next = idx < allChapters.length - 1 ? allChapters[idx + 1] : null;
+  const povFont = readerFont || chapter.pov_font || 'Inter, sans-serif';
+  await loadGoogleFont(chapter.pov_font);
+  el.innerHTML = `
+    <div class="reader-header">
+      <div class="reader-breadcrumb">
+        <span onclick="navigate('novels')">Novels</span> ›
+        <span onclick="navigate('novel', '${chapter.novels.id}')">${escapeHtml(chapter.novels.title)}</span> ›
+        Chapter ${chapter.chapter_number}
+      </div>
+      <div class="reader-controls">
+        <button class="btn-icon" onclick="toggleFontPanel()" title="Reading settings">Aa</button>
+      </div>
+    </div>
+    <div class="reader-meta">
+      ${chapter.characters ? `<div class="reader-pov">${escapeHtml(chapter.characters.name)}'s perspective</div>` : ''}
+      <div class="reader-title">${escapeHtml(chapter.title)}</div>
+      <div class="reader-chapter-num">Chapter ${chapter.chapter_number}</div>
+    </div>
+    <div class="reader-body" id="reader-body" style="font-family:${povFont};font-size:${fontSizes[readerFontSize]}">
+      ${chapter.content.split('\n\n').map(p => `<p>${escapeHtml(p)}</p>`).join('')}
+    </div>
+    <div class="reader-nav">
+      ${prev ? `<button onclick="navigate('chapter', '${prev.id}')">← Ch. ${prev.chapter_number}: ${escapeHtml(prev.title)}</button>` : '<span></span>'}
+      ${next ? `<button onclick="navigate('chapter', '${next.id}')">Ch. ${next.chapter_number}: ${escapeHtml(next.title)} →</button>` : '<span></span>'}
+    </div>
+  `;
+  renderFontPanel(chapter.pov_font);
+  renderChapterComments(chapterId);
+}
+
+async function loadGoogleFont(fontName) {
+  if (!fontName || loadedFonts.has(fontName)) return;
+  try {
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(fontName).replace(/%20/g, '+')}:ital,wght@0,400;0,500;1,400&display=swap`;
+    document.head.appendChild(link);
+    loadedFonts.add(fontName);
+  } catch(e) {}
+}
+
+function toggleFontPanel() {
+  document.getElementById('font-panel').classList.toggle('open');
+}
+
+function renderFontPanel(povFont) {
+  const el = document.getElementById('font-options');
+  const opts = [
+    { name: "Author's choice", value: povFont || 'Inter' },
+    { name: 'Serif (Cormorant)', value: 'Cormorant Garamond' },
+    { name: 'Clean (Inter)', value: 'Inter' },
+    { name: 'Georgia', value: 'Georgia' },
+    { name: 'Palatino', value: 'Palatino Linotype' },
+    { name: 'Mono', value: 'Courier New' },
+  ];
+  el.innerHTML = opts.map((o, i) => `
+    <div class="font-option ${(!readerFont && i === 0) || readerFont === o.value ? 'selected' : ''}"
+      style="font-family:'${o.value}',serif"
+      onclick="setReaderFont('${o.value}', ${i === 0})">
+      ${o.name}
+    </div>
+  `).join('');
+  document.getElementById('size-label').textContent = fontSizeLabels[readerFontSize];
+}
+
+function setReaderFont(font, isDefault) {
+  readerFont = isDefault ? null : font;
+  if (readerFont) localStorage.setItem('readerFont', font);
+  else localStorage.removeItem('readerFont');
+  const body = document.getElementById('reader-body');
+  if (body) body.style.fontFamily = readerFont || (currentChapter?.pov_font || 'Inter') + ', sans-serif';
+  if (currentChapter) renderFontPanel(currentChapter.pov_font);
+}
+
+function changeFontSize(dir) {
+  readerFontSize = Math.max(0, Math.min(4, readerFontSize + dir));
+  localStorage.setItem('readerFontSize', readerFontSize);
+  const body = document.getElementById('reader-body');
+  if (body) body.style.fontSize = fontSizes[readerFontSize];
+  document.getElementById('size-label').textContent = fontSizeLabels[readerFontSize];
+}
+
+// ── COMMENTS ──
+async function renderComments(containerId, novelId, chapterId) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  const sortEl = container.querySelector('.comment-sort .sort-btn.active');
+  const sort = sortEl ? sortEl.dataset.sort : 'popular';
+  let query = sb.from('comments_with_counts').select('*, profiles(display_name, avatar_url, is_author)');
+  if (novelId) query = query.eq('novel_id', novelId);
+  if (chapterId) query = query.eq('chapter_id', chapterId);
+  if (sort === 'popular') query = query.order('agree_count', { ascending: false });
+  else if (sort === 'newest') query = query.order('created_at', { ascending: false });
+  else query = query.order('created_at', { ascending: true });
+  const { data: comments } = await query;
+  let userReactions = {};
+  if (currentUser && comments && comments.length > 0) {
+    const ids = comments.map(c => c.id);
+    const { data: reactions } = await sb.from('comment_reactions').select('comment_id, reaction').eq('user_id', currentUser.id).in('comment_id', ids);
+    if (reactions) reactions.forEach(r => { userReactions[r.comment_id] = r.reaction; });
+  }
+  const listEl = container.querySelector('.comments-list');
+  if (!listEl) return;
+  if (!comments || comments.length === 0) {
+    listEl.innerHTML = '<div class="empty-state"><p>No comments yet. Be the first to share your thoughts.</p></div>';
+    return;
+  }
+  listEl.innerHTML = comments.map(c => {
+    const initials = c.profiles.display_name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+    const myReaction = userReactions[c.id];
+    return `
+      <div class="comment-card" id="comment-${c.id}">
+        <div class="comment-header">
+          <div class="avatar-sm" style="width:28px;height:28px;font-size:0.65rem">
+            ${c.profiles.avatar_url ? `<img src="${c.profiles.avatar_url}" alt="">` : initials}
+          </div>
+          <span class="comment-name">${escapeHtml(c.profiles.display_name)}</span>
+          ${c.profiles.is_author ? '<span class="author-badge">Author</span>' : ''}
+          <span class="comment-time">${formatDate(c.created_at)}</span>
+        </div>
+        <div class="comment-body">${escapeHtml(c.body)}</div>
+        <div class="comment-actions">
+          <button class="reaction-btn agree ${myReaction === 'agree' ? 'active' : ''}"
+            onclick="react('${c.id}', 'agree', '${novelId||''}', '${chapterId||''}', '${containerId}')">
+            ✓ Agree <span>${c.agree_count}</span>
+          </button>
+          <button class="reaction-btn disagree ${myReaction === 'disagree' ? 'active' : ''}"
+            onclick="react('${c.id}', 'disagree', '${novelId||''}', '${chapterId||''}', '${containerId}')">
+            ✗ Disagree <span>${c.disagree_count}</span>
+          </button>
+          ${(currentUser && (currentUser.id === c.user_id || currentProfile?.is_author))
+            ? `<button class="delete-comment-btn" onclick="deleteComment('${c.id}', '${novelId||''}', '${chapterId||''}', '${containerId}')">Delete</button>`
+            : ''}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function buildCommentsSection(containerId, title, novelId, chapterId) {
+  return `
+    <div class="comments-section" id="${containerId}">
+      <h3>${title}</h3>
+      <div class="comment-sort">
+        <button class="sort-btn active" data-sort="popular" onclick="setCommentSort(this,'${containerId}','${novelId||''}','${chapterId||''}')">Most agreed</button>
+        <button class="sort-btn" data-sort="newest" onclick="setCommentSort(this,'${containerId}','${novelId||''}','${chapterId||''}')">Newest</button>
+        <button class="sort-btn" data-sort="oldest" onclick="setCommentSort(this,'${containerId}','${novelId||''}','${chapterId||''}')">Oldest</button>
+      </div>
+      ${currentUser
+        ? `<div class="comment-form">
+            <textarea id="${containerId}-input" placeholder="Share your thoughts…" rows="3"></textarea>
+            <div class="comment-form-footer">
+              <button class="btn-primary" onclick="postComment('${containerId}','${novelId||''}','${chapterId||''}')">Post comment</button>
+            </div>
+           </div>`
+        : `<div class="login-prompt">
+             <button onclick="openAuth('signup')">Sign in or join free</button> to leave a comment.
+           </div>`}
+      <div class="comments-list"></div>
+    </div>
+  `;
+}
+
+function renderNovelComments(novelId) {
+  const el = document.getElementById('novel-detail-content');
+  el.insertAdjacentHTML('beforeend', buildCommentsSection('novel-comments', 'Discussion', novelId, ''));
+  renderComments('novel-comments', novelId, null);
+}
+
+function renderChapterComments(chapterId) {
+  const el = document.getElementById('reader-content');
+  el.insertAdjacentHTML('beforeend', buildCommentsSection('chapter-comments', 'Chapter discussion', '', chapterId));
+  renderComments('chapter-comments', null, chapterId);
+}
+
+function setCommentSort(btn, containerId, novelId, chapterId) {
+  btn.closest('.comment-sort').querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderComments(containerId, novelId || null, chapterId || null);
+}
+
+async function postComment(containerId, novelId, chapterId) {
+  if (!currentUser) { openAuth('signup'); return; }
+  const input = document.getElementById(`${containerId}-input`);
+  const body = input.value.trim();
+  if (!body) return;
+  const payload = { user_id: currentUser.id, body };
+  if (novelId) payload.novel_id = novelId;
+  if (chapterId) payload.chapter_id = chapterId;
+  const { error } = await sb.from('comments').insert(payload);
+  if (error) { showToast('Could not post comment.', 'error'); return; }
+  input.value = '';
+  renderComments(containerId, novelId || null, chapterId || null);
+  showToast('Comment posted.', 'success');
+}
+
+async function react(commentId, reaction, novelId, chapterId, containerId) {
+  if (!currentUser) { openAuth('signup'); return; }
+  const { data: existing } = await sb.from('comment_reactions').select('*').eq('comment_id', commentId).eq('user_id', currentUser.id).single();
+  if (existing) {
+    if (existing.reaction === reaction) {
+      await sb.from('comment_reactions').delete().eq('id', existing.id);
+    } else {
+      await sb.from('comment_reactions').update({ reaction }).eq('id', existing.id);
+    }
+  } else {
+    await sb.from('comment_reactions').insert({ comment_id: commentId, user_id: currentUser.id, reaction });
+  }
+  renderComments(containerId, novelId || null, chapterId || null);
+}
+
+async function deleteComment(commentId, novelId, chapterId, containerId) {
+  if (!confirm('Delete this comment?')) return;
+  await sb.from('comments').delete().eq('id', commentId);
+  renderComments(containerId, novelId || null, chapterId || null);
+  showToast('Comment deleted.', 'success');
+}
+
+// ── AUTH ──
+function openAuth(mode) {
+  authMode = mode;
+  document.getElementById('auth-modal').classList.add('open');
+  document.getElementById('auth-error').classList.remove('show');
+  updateAuthUI();
+}
+function closeAuth() { document.getElementById('auth-modal').classList.remove('open'); }
+function toggleAuth() { authMode = authMode === 'signin' ? 'signup' : 'signin'; updateAuthUI(); }
+function updateAuthUI() {
+  const isSignup = authMode === 'signup';
+  document.getElementById('auth-title').textContent = isSignup ? 'Join for free' : 'Welcome back';
+  document.getElementById('auth-sub').textContent = isSignup ? 'Create an account to comment and subscribe.' : 'Sign in to join the conversation.';
+  document.getElementById('auth-submit').textContent = isSignup ? 'Create account' : 'Sign in';
+  document.getElementById('auth-name-group').style.display = isSignup ? 'block' : 'none';
+  document.getElementById('auth-toggle').innerHTML = isSignup
+    ? 'Already have an account? <button onclick="toggleAuth()">Sign in</button>'
+    : "Don't have an account? <button onclick=\"toggleAuth()\">Join for free</button>";
+}
+async function submitAuth() {
+  const email = document.getElementById('auth-email').value.trim();
+  const password = document.getElementById('auth-password').value;
+  const errEl = document.getElementById('auth-error');
+  errEl.classList.remove('show');
+  if (authMode === 'signup') {
+    const name = document.getElementById('auth-name').value.trim();
+    if (!name) { errEl.textContent = 'Please enter a display name.'; errEl.classList.add('show'); return; }
+    const { error } = await sb.auth.signUp({ email, password, options: { data: { display_name: name } } });
+    if (error) { errEl.textContent = error.message; errEl.classList.add('show'); return; }
+    showToast('Account created! Check your email to confirm.', 'success');
+    closeAuth();
+  } else {
+    const { error } = await sb.auth.signInWithPassword({ email, password });
+    if (error) { errEl.textContent = error.message; errEl.classList.add('show'); return; }
+    showToast('Signed in.', 'success');
+    closeAuth();
+  }
+}
+async function signOut() { await sb.auth.signOut(); showToast('Signed out.', 'success'); navigate('home'); }
+
+// ── ADMIN ──
+function showAdminPanel(name) {
+  document.querySelectorAll('.admin-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.admin-link').forEach(l => l.classList.remove('active'));
+  document.getElementById(`admin-${name}`).classList.add('active');
+  event.target.classList.add('active');
+  if (name === 'series') loadAdminSeries();
+  if (name === 'novels') loadAdminNovels();
+  if (name === 'characters') loadAdminCharacters();
+  if (name === 'chapters') loadAdminChapters();
+  if (name === 'notices') loadAdminNotices();
+}
+
+async function loadAdminPage() {
+  if (!currentProfile?.is_author) { navigate('home'); return; }
+  loadAdminSeries();
+}
+
+async function loadAdminSeries() {
+  const { data } = await sb.from('series').select('*').order('sort_order');
+  const el = document.getElementById('series-admin-list');
+  if (!data || data.length === 0) { el.innerHTML = '<div class="empty-state"><p>No series yet.</p></div>'; return; }
+  el.innerHTML = data.map(s => `
+    <div class="admin-card">
+      <div class="admin-card-header">
+        <h4>${escapeHtml(s.title)}</h4>
+        <div class="admin-card-actions">
+          <button class="btn-sm" onclick="openSeriesForm('${s.id}')">Edit</button>
+          <button class="btn-sm danger" onclick="deleteSeries('${s.id}')">Delete</button>
+        </div>
+      </div>
+      <p style="font-size:0.85rem;color:var(--lavender)">${s.description || 'No description.'}</p>
+    </div>
+  `).join('');
+}
+
+function openSeriesForm(id) {
+  sb.from('series').select('*').eq('id', id).single().then(({ data }) => {
+    document.getElementById('form-modal-title').textContent = id ? 'Edit series' : 'New series';
+    document.getElementById('form-modal-sub').textContent = '';
+    document.getElementById('form-modal-body').innerHTML = `
+      <div class="form-group"><label>Title</label><input id="f-title" value="${data ? escapeHtml(data.title) : ''}"></div>
+      <div class="form-group"><label>Description</label><textarea id="f-desc" rows="3">${data ? escapeHtml(data.description||'') : ''}</textarea></div>
+      <div class="form-group"><label>Sort order</label><input id="f-sort" type="number" value="${data ? data.sort_order : 0}"></div>
+    `;
+    formModalCallback = async () => {
+      const payload = { title: document.getElementById('f-title').value, description: document.getElementById('f-desc').value, sort_order: parseInt(document.getElementById('f-sort').value)||0 };
+      if (id) await sb.from('series').update(payload).eq('id', id);
+      else await sb.from('series').insert(payload);
+      closeFormModal(); loadAdminSeries(); loadNovelsPage(); showToast('Saved.', 'success');
+    };
+    document.getElementById('form-modal').classList.add('open');
+  });
+  if (!id) {
+    document.getElementById('form-modal-title').textContent = 'New series';
+    document.getElementById('form-modal-body').innerHTML = `
+      <div class="form-group"><label>Title</label><input id="f-title" value=""></div>
+      <div class="form-group"><label>Description</label><textarea id="f-desc" rows="3"></textarea></div>
+      <div class="form-group"><label>Sort order</label><input id="f-sort" type="number" value="0"></div>
+    `;
+    formModalCallback = async () => {
+      const payload = { title: document.getElementById('f-title').value, description: document.getElementById('f-desc').value, sort_order: parseInt(document.getElementById('f-sort').value)||0 };
+      await sb.from('series').insert(payload);
+      closeFormModal(); loadAdminSeries(); loadNovelsPage(); showToast('Saved.', 'success');
+    };
+    document.getElementById('form-modal').classList.add('open');
+  }
+}
+
+async function deleteSeries(id) {
+  if (!confirm('Delete this series? This will also delete all its novels and chapters.')) return;
+  await sb.from('series').delete().eq('id', id);
+  loadAdminSeries(); showToast('Deleted.', 'success');
+}
+
+async function loadAdminNovels() {
+  const { data } = await sb.from('novels').select('*, series(title)').order('sort_order');
+  const el = document.getElementById('novels-admin-list');
+  if (!data || data.length === 0) { el.innerHTML = '<div class="empty-state"><p>No novels yet.</p></div>'; return; }
+  el.innerHTML = data.map(n => `
+    <div class="admin-card">
+      <div class="admin-card-header">
+        <h4>${escapeHtml(n.title)}</h4>
+        <div class="admin-card-actions">
+          <button class="btn-sm" onclick="openNovelForm('${n.id}')">Edit</button>
+          <button class="btn-sm danger" onclick="deleteNovel('${n.id}')">Delete</button>
+        </div>
+      </div>
+      <p style="font-size:0.82rem;color:var(--lavender)">${n.series ? escapeHtml(n.series.title) : 'No series'} · ${n.status}</p>
+    </div>
+  `).join('');
+}
+
+async function openNovelForm(id) {
+  const { data: series } = await sb.from('series').select('id, title').order('sort_order');
+  let novel = null;
+  if (id) { const { data } = await sb.from('novels').select('*').eq('id', id).single(); novel = data; }
+  document.getElementById('form-modal-title').textContent = id ? 'Edit novel' : 'New novel';
+  document.getElementById('form-modal-body').innerHTML = `
+    <div class="form-group"><label>Title</label><input id="f-title" value="${novel ? escapeHtml(novel.title) : ''}"></div>
+    <div class="form-group"><label>Slug (URL-safe, unique)</label><input id="f-slug" value="${novel ? novel.slug : ''}"></div>
+    <div class="form-group"><label>Series</label>
+      <select id="f-series">
+        <option value="">— No series —</option>
+        ${(series||[]).map(s => `<option value="${s.id}" ${novel?.series_id === s.id ? 'selected' : ''}>${escapeHtml(s.title)}</option>`).join('')}
+      </select>
+    </div>
+    <div class="form-group"><label>Synopsis</label><textarea id="f-synopsis" rows="4">${novel ? escapeHtml(novel.synopsis||'') : ''}</textarea></div>
+    <div class="form-group"><label>Genre</label><input id="f-genre" value="${novel ? escapeHtml(novel.genre||'') : ''}"></div>
+    <div class="form-group"><label>Cover image URL</label><input id="f-cover" value="${novel ? (novel.cover_url||'') : ''}"></div>
+    <div class="form-group"><label>Status</label>
+      <select id="f-status">
+        <option ${novel?.status === 'ongoing' ? 'selected' : ''}>ongoing</option>
+        <option ${novel?.status === 'completed' ? 'selected' : ''}>completed</option>
+        <option ${novel?.status === 'hiatus' ? 'selected' : ''}>hiatus</option>
+      </select>
+    </div>
+    <div class="form-group"><label>Sort order</label><input id="f-sort" type="number" value="${novel ? novel.sort_order : 0}"></div>
+  `;
+  formModalCallback = async () => {
+    const payload = {
+      title: document.getElementById('f-title').value,
+      slug: document.getElementById('f-slug').value,
+      series_id: document.getElementById('f-series').value || null,
+      synopsis: document.getElementById('f-synopsis').value,
+      genre: document.getElementById('f-genre').value,
+      cover_url: document.getElementById('f-cover').value || null,
+      status: document.getElementById('f-status').value,
+      sort_order: parseInt(document.getElementById('f-sort').value)||0
+    };
+    if (id) await sb.from('novels').update(payload).eq('id', id);
+    else await sb.from('novels').insert(payload);
+    closeFormModal(); loadAdminNovels(); showToast('Saved.', 'success');
+  };
+  document.getElementById('form-modal').classList.add('open');
+}
+
+async function deleteNovel(id) {
+  if (!confirm('Delete this novel and all its chapters?')) return;
+  await sb.from('novels').delete().eq('id', id);
+  loadAdminNovels(); showToast('Deleted.', 'success');
+}
+
+async function loadAdminCharacters() {
+  const { data } = await sb.from('characters').select('*, novels(title)').order('created_at');
+  const el = document.getElementById('characters-admin-list');
+  if (!data || data.length === 0) { el.innerHTML = '<div class="empty-state"><p>No characters yet.</p></div>'; return; }
+  el.innerHTML = data.map(c => `
+    <div class="admin-card">
+      <div class="admin-card-header">
+        <h4>${escapeHtml(c.name)}</h4>
+        <div class="admin-card-actions">
+          <button class="btn-sm" onclick="openCharacterForm('${c.id}')">Edit</button>
+          <button class="btn-sm danger" onclick="deleteCharacter('${c.id}')">Delete</button>
+        </div>
+      </div>
+      <p style="font-size:0.82rem;color:var(--lavender)">${c.novels ? escapeHtml(c.novels.title) : ''} · Font: ${escapeHtml(c.default_font)}</p>
+    </div>
+  `).join('');
+}
+
+async function openCharacterForm(id) {
+  const { data: novels } = await sb.from('novels').select('id, title').order('sort_order');
+  let char = null;
+  if (id) { const { data } = await sb.from('characters').select('*').eq('id', id).single(); char = data; }
+  const GFONTS_POPULAR = ['Cormorant Garamond','Playfair Display','Lora','Merriweather','EB Garamond','Libre Baskerville','Crimson Text','Spectral','Cinzel','UnifrakturMaguntia','MedievalSharp','Uncial Antiqua','Philosopher','Josefin Sans','Raleway','Montserrat','Nunito','Quicksand','Dancing Script','Pacifico','Great Vibes','Satisfy','Pinyon Script','Tangerine','Rochester','Petit Formal Script','Homemade Apple','Rock Salt','Caveat','Permanent Marker','Patrick Hand','Indie Flower','Coming Soon','Handlee','Kalam','Nanum Pen Script','Architects Daughter','Zeyada','Mr Dafoe','Dawning of a New Day'];
+  document.getElementById('form-modal-title').textContent = id ? 'Edit character' : 'New character';
+  document.getElementById('form-modal-sub').textContent = 'The POV font you pick here will pre-fill when creating new chapters for this character.';
+  document.getElementById('form-modal-body').innerHTML = `
+    <div class="form-group"><label>Name</label><input id="f-name" value="${char ? escapeHtml(char.name) : ''}"></div>
+    <div class="form-group"><label>Novel</label>
+      <select id="f-novel">
+        ${(novels||[]).map(n => `<option value="${n.id}" ${char?.novel_id === n.id ? 'selected' : ''}>${escapeHtml(n.title)}</option>`).join('')}
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Default POV font</label>
+      <input id="f-font-search" class="font-search" placeholder="Search fonts…" oninput="filterFontPicker(this.value)" style="margin-bottom:0.5rem">
+      <div class="font-picker-grid" id="font-picker-grid">
+        ${GFONTS_POPULAR.map(f => `
+          <div class="font-pick-option ${char?.default_font === f ? 'selected' : ''}"
+            style="font-family:'${f}'"
+            data-font="${f}"
+            onclick="selectFont('${f}')">
+            ${f}
+          </div>
+        `).join('')}
+      </div>
+      <input type="hidden" id="f-font" value="${char ? char.default_font : 'Inter'}">
+    </div>
+  `;
+  formModalCallback = async () => {
+    const payload = { name: document.getElementById('f-name').value, novel_id: document.getElementById('f-novel').value, default_font: document.getElementById('f-font').value };
+    if (id) await sb.from('characters').update(payload).eq('id', id);
+    else await sb.from('characters').insert(payload);
+    closeFormModal(); loadAdminCharacters(); showToast('Saved.', 'success');
+  };
+  document.getElementById('form-modal').classList.add('open');
+  GFONTS_POPULAR.forEach(f => loadGoogleFont(f));
+}
+
+function selectFont(font) {
+  document.querySelectorAll('.font-pick-option').forEach(el => el.classList.remove('selected'));
+  document.querySelectorAll(`.font-pick-option[data-font="${font}"]`).forEach(el => el.classList.add('selected'));
+  document.getElementById('f-font').value = font;
+}
+
+function filterFontPicker(query) {
+  document.querySelectorAll('.font-pick-option').forEach(el => {
+    el.style.display = el.dataset.font.toLowerCase().includes(query.toLowerCase()) ? '' : 'none';
+  });
+}
+
+async function deleteCharacter(id) {
+  if (!confirm('Delete this character?')) return;
+  await sb.from('characters').delete().eq('id', id);
+  loadAdminCharacters(); showToast('Deleted.', 'success');
+}
+
+async function loadAdminChapters() {
+  const { data } = await sb.from('chapters').select('*, novels(title), characters(name)').order('created_at', { ascending: false });
+  const el = document.getElementById('chapters-admin-list');
+  if (!data || data.length === 0) { el.innerHTML = '<div class="empty-state"><p>No chapters yet.</p></div>'; return; }
+  el.innerHTML = data.map(c => `
+    <div class="admin-card">
+      <div class="admin-card-header">
+        <h4>Ch. ${c.chapter_number}: ${escapeHtml(c.title)}</h4>
+        <div class="admin-card-actions">
+          <button class="btn-sm" onclick="openChapterForm('${c.id}')">Edit</button>
+          <button class="btn-sm danger" onclick="deleteChapter('${c.id}')">Delete</button>
+        </div>
+      </div>
+      <p style="font-size:0.82rem;color:var(--lavender)">
+        ${c.novels ? escapeHtml(c.novels.title) : ''} ·
+        ${c.characters ? `POV: ${escapeHtml(c.characters.name)}` : 'No POV'} ·
+        Font: ${escapeHtml(c.pov_font)} ·
+        ${c.published ? '<span style="color:var(--success)">Published</span>' : '<span style="color:var(--lavender)">Draft</span>'}
+      </p>
+      ${c.author_note ? `<p style="font-size:0.8rem;color:var(--gold);margin-top:0.4rem;font-style:italic">Note: ${escapeHtml(c.author_note)}</p>` : ''}
+    </div>
+  `).join('');
+}
+
+async function openChapterForm(id) {
+  const { data: novels } = await sb.from('novels').select('id, title').order('sort_order');
+  const { data: characters } = await sb.from('characters').select('id, name, default_font, novel_id').order('created_at');
+  let chapter = null;
+  if (id) { const { data } = await sb.from('chapters').select('*').eq('id', id).single(); chapter = data; }
+  document.getElementById('form-modal-title').textContent = id ? 'Edit chapter' : 'New chapter';
+  document.getElementById('form-modal-sub').textContent = '';
+  document.getElementById('form-modal-body').innerHTML = `
+    <div class="form-group"><label>Novel</label>
+      <select id="f-novel" onchange="filterChapterCharacters()">
+        ${(novels||[]).map(n => `<option value="${n.id}" ${chapter?.novel_id === n.id ? 'selected' : ''}>${escapeHtml(n.title)}</option>`).join('')}
+      </select>
+    </div>
+    <div class="form-group"><label>Chapter number (decimals ok, e.g. 1.5 for interlude)</label><input id="f-num" type="number" step="0.5" value="${chapter ? chapter.chapter_number : ''}"></div>
+    <div class="form-group"><label>Title</label><input id="f-title" value="${chapter ? escapeHtml(chapter.title) : ''}"></div>
+    <div class="form-group"><label>Slug (URL-safe)</label><input id="f-slug" value="${chapter ? chapter.slug : ''}"></div>
+    <div class="form-group"><label>POV Character</label>
+      <select id="f-char" onchange="applyCharacterFont()">
+        <option value="">— None —</option>
+        ${(characters||[]).map(c => `<option value="${c.id}" data-font="${c.default_font}" ${chapter?.character_id === c.id ? 'selected' : ''}>${escapeHtml(c.name)}</option>`).join('')}
+      </select>
+    </div>
+    <div class="form-group"><label>POV font for this chapter</label>
+      <input id="f-font" value="${chapter ? chapter.pov_font : 'Inter'}" placeholder="e.g. Cormorant Garamond">
+      <p style="font-size:0.78rem;color:var(--lavender);margin-top:0.35rem">Overrides the character's default. Use any Google Font name.</p>
+    </div>
+    <div class="form-group"><label>Content</label><textarea id="f-content" rows="12" style="font-size:0.9rem">${chapter ? escapeHtml(chapter.content) : ''}</textarea></div>
+    <div class="form-group"><label>Private author note (only you see this)</label><input id="f-note" value="${chapter ? escapeHtml(chapter.author_note||'') : ''}" placeholder="e.g. post-tower, compact hand"></div>
+    <div class="form-group" style="display:flex;align-items:center;gap:0.75rem">
+      <input type="checkbox" id="f-published" style="width:auto" ${chapter?.published !== false ? 'checked' : ''}>
+      <label for="f-published" style="text-transform:none;letter-spacing:0;font-size:0.9rem;margin:0">Published (visible to readers)</label>
+    </div>
+  `;
+  formModalCallback = async () => {
+    const payload = {
+      novel_id: document.getElementById('f-novel').value,
+      chapter_number: parseFloat(document.getElementById('f-num').value),
+      title: document.getElementById('f-title').value,
+      slug: document.getElementById('f-slug').value,
+      character_id: document.getElementById('f-char').value || null,
+      pov_font: document.getElementById('f-font').value || 'Inter',
+      content: document.getElementById('f-content').value,
+      author_note: document.getElementById('f-note').value || null,
+      published: document.getElementById('f-published').checked
+    };
+    if (id) await sb.from('chapters').update(payload).eq('id', id);
+    else await sb.from('chapters').insert(payload);
+    closeFormModal(); loadAdminChapters(); showToast('Saved.', 'success');
+  };
+  document.getElementById('form-modal').classList.add('open');
+}
+
+function applyCharacterFont() {
+  const sel = document.getElementById('f-char');
+  const opt = sel.options[sel.selectedIndex];
+  if (opt && opt.dataset.font) {
+    document.getElementById('f-font').value = opt.dataset.font;
+  }
+}
+
+async function deleteChapter(id) {
+  if (!confirm('Delete this chapter?')) return;
+  await sb.from('chapters').delete().eq('id', id);
+  loadAdminChapters(); showToast('Deleted.', 'success');
+}
+
+async function loadAdminNotices() {
+  const { data } = await sb.from('notices').select('*').order('created_at', { ascending: false });
+  const el = document.getElementById('notices-admin-list');
+  if (!data || data.length === 0) { el.innerHTML = '<div class="empty-state"><p>No notices yet.</p></div>'; return; }
+  el.innerHTML = data.map(n => `
+    <div class="admin-card">
+      <div class="admin-card-header">
+        <span style="font-size:0.85rem">${formatDate(n.created_at)}</span>
+        <button class="btn-sm danger" onclick="deleteNotice('${n.id}')">Delete</button>
+      </div>
+      <p style="font-size:0.9rem;margin-top:0.5rem">${escapeHtml(n.body)}</p>
+    </div>
+  `).join('');
+}
+
+function openNoticeForm() {
+  document.getElementById('form-modal-title').textContent = 'New notice';
+  document.getElementById('form-modal-sub').textContent = 'This will appear on your homepage notice board.';
+  document.getElementById('form-modal-body').innerHTML = `
+    <div class="form-group"><label>Message</label><textarea id="f-body" rows="4" placeholder="Announce a new chapter, a hiatus, a special post…"></textarea></div>
+  `;
+  formModalCallback = async () => {
+    await sb.from('notices').insert({ body: document.getElementById('f-body').value });
+    closeFormModal(); loadAdminNotices(); loadNotices(); showToast('Notice posted.', 'success');
+  };
+  document.getElementById('form-modal').classList.add('open');
+}
+
+async function deleteNotice(id) {
+  if (!confirm('Delete this notice?')) return;
+  await sb.from('notices').delete().eq('id', id);
+  loadAdminNotices(); loadNotices(); showToast('Deleted.', 'success');
+}
+
+function showAddNotice() { navigate('admin'); setTimeout(() => { showAdminPanel('notices'); openNoticeForm(); }, 100); }
+
+// ── FORM MODAL ──
+function closeFormModal() { document.getElementById('form-modal').classList.remove('open'); formModalCallback = null; }
+function submitFormModal() { if (formModalCallback) formModalCallback(); }
+
+// ── HELPERS ──
+function escapeHtml(str) {
+  if (!str) return '';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function formatDate(iso) {
+  return new Date(iso).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
+}
+function showToast(msg, type) {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.className = `toast show ${type}`;
+  setTimeout(() => el.classList.remove('show'), 3200);
+}
+
+// Close modals on overlay click
+document.getElementById('auth-modal').addEventListener('click', e => { if (e.target === e.currentTarget) closeAuth(); });
+document.getElementById('form-modal').addEventListener('click', e => { if (e.target === e.currentTarget) closeFormModal(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeAuth(); closeFormModal(); document.getElementById('font-panel').classList.remove('open'); } });
+</script>
+</body>
+</html>
