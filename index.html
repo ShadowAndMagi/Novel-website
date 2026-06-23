@@ -116,107 +116,154 @@ nav {
   position: relative; min-height: 90vh; overflow: hidden;
   display: flex; flex-direction: column; justify-content: center; align-items: center;
   text-align: center;
-  background:
-    radial-gradient(ellipse 130% 80% at 50% -5%, #2A2045 0%, #1A1428 50%, #14101F 100%);
+  background: #0E0B18;
 }
 
-/* Aurora borealis — layered glowing bands */
-.sky::before {
-  content: '';
-  position: absolute; inset: 0; pointer-events: none; z-index: 1;
+/* Deep space gradient — dark top, slightly lighter at horizon centre */
+.sky-bg {
+  position: absolute; inset: 0; z-index: 0;
   background:
-    radial-gradient(ellipse 90% 28% at 20% 18%, rgba(100,220,180,0.07) 0%, transparent 70%),
-    radial-gradient(ellipse 70% 22% at 75% 12%, rgba(120,160,240,0.08) 0%, transparent 70%),
-    radial-gradient(ellipse 60% 18% at 50% 22%, rgba(180,120,240,0.06) 0%, transparent 70%),
-    radial-gradient(ellipse 80% 20% at 30% 8%, rgba(80,200,160,0.05) 0%, transparent 70%);
-  animation: aurora 18s ease-in-out infinite alternate;
-}
-@keyframes aurora {
-  0%   { opacity: 0.6; transform: scaleX(1)   translateY(0px);  }
-  33%  { opacity: 0.9; transform: scaleX(1.04) translateY(-6px); }
-  66%  { opacity: 0.7; transform: scaleX(0.97) translateY(4px);  }
-  100% { opacity: 1;   transform: scaleX(1.02) translateY(-3px); }
+    radial-gradient(ellipse 100% 60% at 50% 50%, #1E1535 0%, #0E0B18 70%);
 }
 
-/* Milky Way band — dense off-centre streak */
-.sky::after {
-  content: '';
-  position: absolute; inset: 0; pointer-events: none; z-index: 1;
+/* Milky Way core — glowing dust band across the middle */
+.sky-galaxy {
+  position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  /* Core glow — warm violet/gold haze */
   background:
-    radial-gradient(ellipse 160% 28% at 62% 38%, rgba(155,135,196,0.13) 0%, transparent 60%),
-    radial-gradient(ellipse 120% 18% at 55% 42%, rgba(232,227,245,0.06) 0%, transparent 55%);
-  transform: rotate(-22deg) scaleY(1.4);
+    radial-gradient(ellipse 100% 22% at 50% 50%, rgba(180,155,210,0.18) 0%, transparent 100%),
+    radial-gradient(ellipse 80%  14% at 48% 50%, rgba(220,195,240,0.12) 0%, transparent 100%),
+    radial-gradient(ellipse 60%  10% at 52% 50%, rgba(201,168,118,0.07) 0%, transparent 100%);
+  /* Mask: fully visible only in the middle band, fades to nothing at top/bottom */
+  -webkit-mask-image: linear-gradient(to bottom,
+    transparent  0%,
+    transparent 20%,
+    black       38%,
+    black       62%,
+    transparent 80%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(to bottom,
+    transparent  0%,
+    transparent 20%,
+    black       38%,
+    black       62%,
+    transparent 80%,
+    transparent 100%
+  );
+  animation: galaxy-breathe 12s ease-in-out infinite alternate;
+}
+@keyframes galaxy-breathe {
+  from { opacity: 0.85; }
+  to   { opacity: 1; }
 }
 
-/* Dense star field — three layers at different sizes/opacities */
+/* Aurora above the galaxy band */
+.sky-aurora {
+  position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background:
+    radial-gradient(ellipse 80% 16% at 25% 28%, rgba(80,210,165,0.06) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 12% at 72% 22%, rgba(100,150,230,0.07) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 10% at 50% 18%, rgba(160,100,220,0.05) 0%, transparent 70%);
+  -webkit-mask-image: linear-gradient(to bottom,
+    transparent  0%,
+    black        8%,
+    black       35%,
+    transparent 50%
+  );
+  mask-image: linear-gradient(to bottom,
+    transparent  0%,
+    black        8%,
+    black       35%,
+    transparent 50%
+  );
+  animation: aurora-shift 16s ease-in-out infinite alternate;
+}
+@keyframes aurora-shift {
+  0%   { opacity: 0.5; transform: translateX(0px);   }
+  50%  { opacity: 0.9; transform: translateX(20px);  }
+  100% { opacity: 0.6; transform: translateX(-15px); }
+}
+
+/* Stars — dense only in the galaxy band, sparse everywhere else */
 .stars {
   position: absolute; inset: 0; pointer-events: none; z-index: 2;
-  /* Tiny faint stars — very dense */
-  background-image:
-    radial-gradient(0.8px 0.8px at 7px   14px,  rgba(232,227,245,0.75), transparent),
-    radial-gradient(0.8px 0.8px at 22px  58px,  rgba(232,227,245,0.55), transparent),
-    radial-gradient(0.8px 0.8px at 38px  9px,   rgba(232,227,245,0.65), transparent),
-    radial-gradient(0.8px 0.8px at 51px  44px,  rgba(232,227,245,0.45), transparent),
-    radial-gradient(0.8px 0.8px at 63px  27px,  rgba(232,227,245,0.7),  transparent),
-    radial-gradient(0.8px 0.8px at 74px  71px,  rgba(232,227,245,0.5),  transparent),
-    radial-gradient(0.8px 0.8px at 89px  3px,   rgba(232,227,245,0.6),  transparent),
-    radial-gradient(0.8px 0.8px at 96px  52px,  rgba(232,227,245,0.4),  transparent),
-    radial-gradient(0.8px 0.8px at 4px   83px,  rgba(232,227,245,0.55), transparent),
-    radial-gradient(0.8px 0.8px at 18px  91px,  rgba(232,227,245,0.65), transparent),
-    radial-gradient(0.8px 0.8px at 31px  77px,  rgba(232,227,245,0.45), transparent),
-    radial-gradient(0.8px 0.8px at 45px  95px,  rgba(232,227,245,0.7),  transparent),
-    radial-gradient(0.8px 0.8px at 57px  62px,  rgba(232,227,245,0.5),  transparent),
-    radial-gradient(0.8px 0.8px at 68px  88px,  rgba(232,227,245,0.6),  transparent),
-    radial-gradient(0.8px 0.8px at 82px  37px,  rgba(232,227,245,0.4),  transparent),
-    radial-gradient(0.8px 0.8px at 93px  79px,  rgba(232,227,245,0.55), transparent),
-    radial-gradient(1px   1px   at 12px  33px,  rgba(201,168,118,0.5),  transparent),
-    radial-gradient(1px   1px   at 47px  18px,  rgba(155,135,196,0.55), transparent),
-    radial-gradient(1px   1px   at 78px  55px,  rgba(201,168,118,0.45), transparent),
-    radial-gradient(1px   1px   at 25px  67px,  rgba(155,135,196,0.5),  transparent);
-  background-repeat: repeat;
-  background-size: 100px 100px;
-  animation: drift 180s linear infinite;
 }
-.stars::before {
-  content: '';
-  position: absolute; inset: 0;
-  /* Medium stars */
+
+/* Sparse top/bottom stars */
+.stars-sparse {
+  position: absolute; inset: 0; pointer-events: none;
   background-image:
-    radial-gradient(1.2px 1.2px at 15px  22px,  rgba(232,227,245,0.9),  transparent),
-    radial-gradient(1.2px 1.2px at 44px  67px,  rgba(232,227,245,0.8),  transparent),
-    radial-gradient(1.2px 1.2px at 71px  11px,  rgba(232,227,245,0.85), transparent),
-    radial-gradient(1.2px 1.2px at 88px  48px,  rgba(232,227,245,0.75), transparent),
-    radial-gradient(1.2px 1.2px at 29px  89px,  rgba(232,227,245,0.8),  transparent),
-    radial-gradient(1.2px 1.2px at 56px  34px,  rgba(201,168,118,0.7),  transparent),
-    radial-gradient(1.2px 1.2px at 8px   55px,  rgba(155,135,196,0.75), transparent),
-    radial-gradient(1.2px 1.2px at 93px  78px,  rgba(232,227,245,0.85), transparent),
-    radial-gradient(1.2px 1.2px at 37px  5px,   rgba(201,168,118,0.65), transparent),
-    radial-gradient(1.2px 1.2px at 62px  92px,  rgba(232,227,245,0.7),  transparent);
-  background-repeat: repeat;
-  background-size: 100px 100px;
-  animation: drift 220s linear infinite reverse;
+    radial-gradient(1px 1px at 8%   6%,  rgba(232,227,245,0.6), transparent),
+    radial-gradient(1px 1px at 23%  4%,  rgba(232,227,245,0.4), transparent),
+    radial-gradient(1px 1px at 41%  9%,  rgba(232,227,245,0.5), transparent),
+    radial-gradient(1px 1px at 67%  3%,  rgba(232,227,245,0.45),transparent),
+    radial-gradient(1px 1px at 82%  7%,  rgba(232,227,245,0.55),transparent),
+    radial-gradient(1px 1px at 94%  11%, rgba(201,168,118,0.4), transparent),
+    radial-gradient(1px 1px at 14%  88%, rgba(232,227,245,0.4), transparent),
+    radial-gradient(1px 1px at 35%  93%, rgba(232,227,245,0.35),transparent),
+    radial-gradient(1px 1px at 58%  91%, rgba(232,227,245,0.45),transparent),
+    radial-gradient(1px 1px at 76%  96%, rgba(232,227,245,0.4), transparent),
+    radial-gradient(1px 1px at 88%  85%, rgba(155,135,196,0.45),transparent),
+    radial-gradient(1.2px 1.2px at 5%  15%, rgba(232,227,245,0.5), transparent),
+    radial-gradient(1.2px 1.2px at 91% 92%, rgba(232,227,245,0.5), transparent);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
 }
-.stars::after {
-  content: '';
-  position: absolute; inset: 0;
-  /* Bright occasional stars */
+
+/* Dense galaxy-band stars — masked to middle only */
+.stars-galaxy {
+  position: absolute; inset: 0; pointer-events: none;
   background-image:
-    radial-gradient(1.8px 1.8px at 23px  41px,  rgba(232,227,245,1),    transparent),
-    radial-gradient(2px   2px   at 67px  19px,  rgba(232,227,245,0.95), transparent),
-    radial-gradient(1.8px 1.8px at 84px  73px,  rgba(201,168,118,0.9),  transparent),
-    radial-gradient(2px   2px   at 11px  88px,  rgba(232,227,245,0.95), transparent),
-    radial-gradient(1.8px 1.8px at 49px  54px,  rgba(155,135,196,0.9),  transparent),
-    radial-gradient(2px   2px   at 76px  31px,  rgba(232,227,245,1),    transparent),
-    radial-gradient(1.5px 1.5px at 35px  8px,   rgba(201,168,118,0.85), transparent),
-    radial-gradient(1.8px 1.8px at 92px  62px,  rgba(232,227,245,0.9),  transparent);
+    radial-gradient(0.8px 0.8px at 3px   8px,  rgba(232,227,245,0.9), transparent),
+    radial-gradient(0.8px 0.8px at 11px  3px,  rgba(232,227,245,0.7), transparent),
+    radial-gradient(0.8px 0.8px at 19px  14px, rgba(232,227,245,0.8), transparent),
+    radial-gradient(0.8px 0.8px at 27px  6px,  rgba(232,227,245,0.6), transparent),
+    radial-gradient(0.8px 0.8px at 34px  18px, rgba(201,168,118,0.7), transparent),
+    radial-gradient(0.8px 0.8px at 42px  2px,  rgba(232,227,245,0.85),transparent),
+    radial-gradient(0.8px 0.8px at 49px  11px, rgba(232,227,245,0.65),transparent),
+    radial-gradient(0.8px 0.8px at 57px  19px, rgba(155,135,196,0.8), transparent),
+    radial-gradient(0.8px 0.8px at 64px  5px,  rgba(232,227,245,0.75),transparent),
+    radial-gradient(0.8px 0.8px at 71px  15px, rgba(232,227,245,0.9), transparent),
+    radial-gradient(0.8px 0.8px at 79px  8px,  rgba(201,168,118,0.6), transparent),
+    radial-gradient(0.8px 0.8px at 86px  17px, rgba(232,227,245,0.7), transparent),
+    radial-gradient(0.8px 0.8px at 93px  3px,  rgba(232,227,245,0.8), transparent),
+    radial-gradient(1px   1px   at 6px   13px, rgba(232,227,245,0.95),transparent),
+    radial-gradient(1px   1px   at 22px  9px,  rgba(232,227,245,0.85),transparent),
+    radial-gradient(1px   1px   at 38px  16px, rgba(201,168,118,0.8), transparent),
+    radial-gradient(1px   1px   at 53px  4px,  rgba(232,227,245,0.9), transparent),
+    radial-gradient(1px   1px   at 68px  12px, rgba(155,135,196,0.85),transparent),
+    radial-gradient(1px   1px   at 83px  7px,  rgba(232,227,245,0.8), transparent),
+    radial-gradient(1.3px 1.3px at 15px  11px, rgba(232,227,245,1),   transparent),
+    radial-gradient(1.3px 1.3px at 46px  14px, rgba(232,227,245,0.95),transparent),
+    radial-gradient(1.3px 1.3px at 74px  4px,  rgba(201,168,118,0.9), transparent),
+    radial-gradient(1.3px 1.3px at 91px  16px, rgba(232,227,245,1),   transparent);
   background-repeat: repeat;
-  background-size: 100px 100px;
-  animation: drift 260s linear infinite;
+  background-size: 96px 20px;
+  -webkit-mask-image: linear-gradient(to bottom,
+    transparent  0%,
+    transparent 28%,
+    black       40%,
+    black       60%,
+    transparent 72%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(to bottom,
+    transparent  0%,
+    transparent 28%,
+    black       40%,
+    black       60%,
+    transparent 72%,
+    transparent 100%
+  );
+  animation: drift 140s linear infinite;
 }
-@keyframes drift { from { background-position: 0 0; } to { background-position: -400px 200px; } }
+
+@keyframes drift { from { background-position: 0 0; } to { background-position: -96px 0; } }
 @media (prefers-reduced-motion: reduce) {
-  .stars, .stars::before, .stars::after { animation: none; }
-  .sky::before { animation: none; }
+  .stars-galaxy { animation: none; }
+  .sky-aurora   { animation: none; }
+  .sky-galaxy   { animation: none; }
 }
 .hero-inner { position: relative; z-index: 2; padding: 6rem 2rem; max-width: 700px; }
 .eyebrow {
@@ -557,7 +604,13 @@ h1 .it { font-style: italic; color: var(--gold); }
   <!-- HOME PAGE -->
   <div id="page-home" class="page active">
     <div class="sky">
-      <div class="stars"></div>
+      <div class="sky-bg"></div>
+      <div class="sky-galaxy"></div>
+      <div class="sky-aurora"></div>
+      <div class="stars">
+        <div class="stars-sparse"></div>
+        <div class="stars-galaxy"></div>
+      </div>
       <div class="hero-inner">
         <div class="eyebrow">a quiet corner between dusk and dawn</div>
         <h1>Where white meets black to create <span class="it">beautiful shades of grey</span></h1>
@@ -608,7 +661,10 @@ h1 .it { font-style: italic; color: var(--gold); }
   <!-- ABOUT PAGE -->
   <div id="page-about" class="page">
     <div class="sky" style="min-height:45vh;">
-      <div class="stars"></div>
+      <div class="sky-bg"></div>
+      <div class="sky-galaxy"></div>
+      <div class="sky-aurora"></div>
+      <div class="stars"><div class="stars-sparse"></div><div class="stars-galaxy"></div></div>
       <div class="hero-inner" style="padding:4rem 2rem;">
         <div class="eyebrow">the author</div>
         <h1>Shadow<span class="it">And</span>Magi</h1>
