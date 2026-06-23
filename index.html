@@ -116,29 +116,108 @@ nav {
   position: relative; min-height: 90vh; overflow: hidden;
   display: flex; flex-direction: column; justify-content: center; align-items: center;
   text-align: center;
-  background: radial-gradient(ellipse 130% 80% at 50% -5%, #2A2045 0%, #1A1428 50%, #14101F 100%);
+  background:
+    radial-gradient(ellipse 130% 80% at 50% -5%, #2A2045 0%, #1A1428 50%, #14101F 100%);
 }
+
+/* Aurora borealis — layered glowing bands */
+.sky::before {
+  content: '';
+  position: absolute; inset: 0; pointer-events: none; z-index: 1;
+  background:
+    radial-gradient(ellipse 90% 28% at 20% 18%, rgba(100,220,180,0.07) 0%, transparent 70%),
+    radial-gradient(ellipse 70% 22% at 75% 12%, rgba(120,160,240,0.08) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 18% at 50% 22%, rgba(180,120,240,0.06) 0%, transparent 70%),
+    radial-gradient(ellipse 80% 20% at 30% 8%, rgba(80,200,160,0.05) 0%, transparent 70%);
+  animation: aurora 18s ease-in-out infinite alternate;
+}
+@keyframes aurora {
+  0%   { opacity: 0.6; transform: scaleX(1)   translateY(0px);  }
+  33%  { opacity: 0.9; transform: scaleX(1.04) translateY(-6px); }
+  66%  { opacity: 0.7; transform: scaleX(0.97) translateY(4px);  }
+  100% { opacity: 1;   transform: scaleX(1.02) translateY(-3px); }
+}
+
+/* Milky Way band — dense off-centre streak */
+.sky::after {
+  content: '';
+  position: absolute; inset: 0; pointer-events: none; z-index: 1;
+  background:
+    radial-gradient(ellipse 160% 28% at 62% 38%, rgba(155,135,196,0.13) 0%, transparent 60%),
+    radial-gradient(ellipse 120% 18% at 55% 42%, rgba(232,227,245,0.06) 0%, transparent 55%);
+  transform: rotate(-22deg) scaleY(1.4);
+}
+
+/* Dense star field — three layers at different sizes/opacities */
 .stars {
-  position: absolute; inset: 0; pointer-events: none;
+  position: absolute; inset: 0; pointer-events: none; z-index: 2;
+  /* Tiny faint stars — very dense */
   background-image:
-    radial-gradient(1.5px 1.5px at 20px 30px, rgba(232,227,245,0.9), transparent),
-    radial-gradient(1px 1px at 90px 80px, rgba(232,227,245,0.7), transparent),
-    radial-gradient(1.5px 1.5px at 160px 50px, rgba(201,168,118,0.8), transparent),
-    radial-gradient(1px 1px at 230px 120px, rgba(232,227,245,0.6), transparent),
-    radial-gradient(1.5px 1.5px at 300px 20px, rgba(232,227,245,0.8), transparent),
-    radial-gradient(1px 1px at 40px 160px, rgba(155,135,196,0.7), transparent),
-    radial-gradient(1.5px 1.5px at 340px 180px, rgba(232,227,245,0.9), transparent),
-    radial-gradient(1px 1px at 120px 200px, rgba(201,168,118,0.6), transparent),
-    radial-gradient(1.5px 1.5px at 380px 100px, rgba(232,227,245,0.7), transparent),
-    radial-gradient(1px 1px at 60px 240px, rgba(232,227,245,0.5), transparent),
-    radial-gradient(1px 1px at 200px 280px, rgba(155,135,196,0.6), transparent),
-    radial-gradient(1.5px 1.5px at 450px 60px, rgba(232,227,245,0.8), transparent);
+    radial-gradient(0.8px 0.8px at 7px   14px,  rgba(232,227,245,0.75), transparent),
+    radial-gradient(0.8px 0.8px at 22px  58px,  rgba(232,227,245,0.55), transparent),
+    radial-gradient(0.8px 0.8px at 38px  9px,   rgba(232,227,245,0.65), transparent),
+    radial-gradient(0.8px 0.8px at 51px  44px,  rgba(232,227,245,0.45), transparent),
+    radial-gradient(0.8px 0.8px at 63px  27px,  rgba(232,227,245,0.7),  transparent),
+    radial-gradient(0.8px 0.8px at 74px  71px,  rgba(232,227,245,0.5),  transparent),
+    radial-gradient(0.8px 0.8px at 89px  3px,   rgba(232,227,245,0.6),  transparent),
+    radial-gradient(0.8px 0.8px at 96px  52px,  rgba(232,227,245,0.4),  transparent),
+    radial-gradient(0.8px 0.8px at 4px   83px,  rgba(232,227,245,0.55), transparent),
+    radial-gradient(0.8px 0.8px at 18px  91px,  rgba(232,227,245,0.65), transparent),
+    radial-gradient(0.8px 0.8px at 31px  77px,  rgba(232,227,245,0.45), transparent),
+    radial-gradient(0.8px 0.8px at 45px  95px,  rgba(232,227,245,0.7),  transparent),
+    radial-gradient(0.8px 0.8px at 57px  62px,  rgba(232,227,245,0.5),  transparent),
+    radial-gradient(0.8px 0.8px at 68px  88px,  rgba(232,227,245,0.6),  transparent),
+    radial-gradient(0.8px 0.8px at 82px  37px,  rgba(232,227,245,0.4),  transparent),
+    radial-gradient(0.8px 0.8px at 93px  79px,  rgba(232,227,245,0.55), transparent),
+    radial-gradient(1px   1px   at 12px  33px,  rgba(201,168,118,0.5),  transparent),
+    radial-gradient(1px   1px   at 47px  18px,  rgba(155,135,196,0.55), transparent),
+    radial-gradient(1px   1px   at 78px  55px,  rgba(201,168,118,0.45), transparent),
+    radial-gradient(1px   1px   at 25px  67px,  rgba(155,135,196,0.5),  transparent);
   background-repeat: repeat;
-  background-size: 500px 320px;
-  animation: drift 120s linear infinite;
+  background-size: 100px 100px;
+  animation: drift 180s linear infinite;
 }
-@keyframes drift { from { background-position: 0 0; } to { background-position: -500px 320px; } }
-@media (prefers-reduced-motion: reduce) { .stars { animation: none; } }
+.stars::before {
+  content: '';
+  position: absolute; inset: 0;
+  /* Medium stars */
+  background-image:
+    radial-gradient(1.2px 1.2px at 15px  22px,  rgba(232,227,245,0.9),  transparent),
+    radial-gradient(1.2px 1.2px at 44px  67px,  rgba(232,227,245,0.8),  transparent),
+    radial-gradient(1.2px 1.2px at 71px  11px,  rgba(232,227,245,0.85), transparent),
+    radial-gradient(1.2px 1.2px at 88px  48px,  rgba(232,227,245,0.75), transparent),
+    radial-gradient(1.2px 1.2px at 29px  89px,  rgba(232,227,245,0.8),  transparent),
+    radial-gradient(1.2px 1.2px at 56px  34px,  rgba(201,168,118,0.7),  transparent),
+    radial-gradient(1.2px 1.2px at 8px   55px,  rgba(155,135,196,0.75), transparent),
+    radial-gradient(1.2px 1.2px at 93px  78px,  rgba(232,227,245,0.85), transparent),
+    radial-gradient(1.2px 1.2px at 37px  5px,   rgba(201,168,118,0.65), transparent),
+    radial-gradient(1.2px 1.2px at 62px  92px,  rgba(232,227,245,0.7),  transparent);
+  background-repeat: repeat;
+  background-size: 100px 100px;
+  animation: drift 220s linear infinite reverse;
+}
+.stars::after {
+  content: '';
+  position: absolute; inset: 0;
+  /* Bright occasional stars */
+  background-image:
+    radial-gradient(1.8px 1.8px at 23px  41px,  rgba(232,227,245,1),    transparent),
+    radial-gradient(2px   2px   at 67px  19px,  rgba(232,227,245,0.95), transparent),
+    radial-gradient(1.8px 1.8px at 84px  73px,  rgba(201,168,118,0.9),  transparent),
+    radial-gradient(2px   2px   at 11px  88px,  rgba(232,227,245,0.95), transparent),
+    radial-gradient(1.8px 1.8px at 49px  54px,  rgba(155,135,196,0.9),  transparent),
+    radial-gradient(2px   2px   at 76px  31px,  rgba(232,227,245,1),    transparent),
+    radial-gradient(1.5px 1.5px at 35px  8px,   rgba(201,168,118,0.85), transparent),
+    radial-gradient(1.8px 1.8px at 92px  62px,  rgba(232,227,245,0.9),  transparent);
+  background-repeat: repeat;
+  background-size: 100px 100px;
+  animation: drift 260s linear infinite;
+}
+@keyframes drift { from { background-position: 0 0; } to { background-position: -400px 200px; } }
+@media (prefers-reduced-motion: reduce) {
+  .stars, .stars::before, .stars::after { animation: none; }
+  .sky::before { animation: none; }
+}
 .hero-inner { position: relative; z-index: 2; padding: 6rem 2rem; max-width: 700px; }
 .eyebrow {
   color: var(--gold); font-size: 0.75rem; letter-spacing: 0.2em;
@@ -481,8 +560,7 @@ h1 .it { font-style: italic; color: var(--gold); }
       <div class="stars"></div>
       <div class="hero-inner">
         <div class="eyebrow">a quiet corner between dusk and dawn</div>
-        <h1>Stories written in the <span class="it">space</span> where shadow meets magic</h1>
-        <p class="hero-sub">I'm ShadowAndMagi — I write fantasy that lives in the in-between hours. This is where I share it, free for anyone who wants to read.</p>
+        <h1>Where white meets black to create <span class="it">beautiful shades of grey</span></h1>
         <div class="hero-cta">
           <button class="btn-hero" onclick="navigate('novels')">Start reading</button>
           <button class="btn-hero-ghost" onclick="navigate('about')">About the author</button>
@@ -493,7 +571,7 @@ h1 .it { font-style: italic; color: var(--gold); }
     <div class="section">
       <div class="home-grid">
         <div class="author-card">
-          <div class="author-avatar">SM</div>
+          <div class="author-avatar">S&amp;M</div>
           <h3>Hello, reader</h3>
           <p id="author-bio">I've always believed stories should be free to find the people who need them. So that's what this place is — no paywalls, no chapter limits, just the work. New chapters go up as I finish them. Thank you for being here.</p>
         </div>
@@ -602,24 +680,41 @@ h1 .it { font-style: italic; color: var(--gold); }
 <div class="modal-overlay" id="auth-modal">
   <div class="modal">
     <button class="modal-close" onclick="closeAuth()">✕</button>
-    <h2 id="auth-title">Welcome back</h2>
-    <p class="modal-sub" id="auth-sub">Sign in to join the conversation.</p>
+    <h2 id="auth-title">Welcome</h2>
+    <p class="modal-sub" id="auth-sub">Enter your email and we'll send you a sign-in code.</p>
     <div class="error-msg" id="auth-error"></div>
-    <div id="auth-name-group" class="form-group" style="display:none">
-      <label>Display name</label>
-      <input type="text" id="auth-name" placeholder="How you'll appear to others">
+
+    <!-- STEP 1: email (+ name if first time) -->
+    <div id="auth-step-1">
+      <div id="auth-name-group" class="form-group" style="display:none">
+        <label>Display name</label>
+        <input type="text" id="auth-name" placeholder="How you'll appear to others">
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="auth-email" placeholder="your@email.com" onkeydown="if(event.key==='Enter')sendOtp()">
+      </div>
+      <button class="btn-primary" style="width:100%;padding:0.75rem" onclick="sendOtp()">Send code</button>
+      <div class="modal-footer" id="auth-toggle">
+        New here? <button onclick="toggleAuthName()">Set a display name first</button>
+      </div>
     </div>
-    <div class="form-group">
-      <label>Email</label>
-      <input type="email" id="auth-email" placeholder="your@email.com">
-    </div>
-    <div class="form-group">
-      <label>Password</label>
-      <input type="password" id="auth-password" placeholder="••••••••">
-    </div>
-    <button class="btn-primary" style="width:100%;padding:0.75rem" id="auth-submit" onclick="submitAuth()">Sign in</button>
-    <div class="modal-footer" id="auth-toggle">
-      Don't have an account? <button onclick="toggleAuth()">Join for free</button>
+
+    <!-- STEP 2: OTP code entry -->
+    <div id="auth-step-2" style="display:none">
+      <p style="color:var(--lavender);font-size:0.88rem;margin-bottom:1.25rem">
+        A 6-digit code was sent to <strong id="auth-email-display"></strong>. Enter it below.
+      </p>
+      <div class="form-group">
+        <label>Code</label>
+        <input type="text" id="auth-otp" placeholder="123456" maxlength="6" inputmode="numeric"
+          style="font-size:1.4rem;letter-spacing:0.3em;text-align:center"
+          onkeydown="if(event.key==='Enter')verifyOtp()">
+      </div>
+      <button class="btn-primary" style="width:100%;padding:0.75rem" onclick="verifyOtp()">Verify code</button>
+      <div class="modal-footer">
+        Wrong email? <button onclick="resetOtpFlow()">Go back</button>
+      </div>
     </div>
   </div>
 </div>
@@ -707,7 +802,7 @@ function onLogout() {
 function renderNav() {
   const el = document.getElementById('nav-auth');
   if (currentProfile) {
-    const initials = currentProfile.display_name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+    const initials = currentProfile.is_author ? 'S&M' : currentProfile.display_name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
     el.innerHTML = `
       <div class="avatar-sm" onclick="toggleUserMenu()" title="${currentProfile.display_name}">
         ${currentProfile.avatar_url ? `<img src="${currentProfile.avatar_url}" alt="">` : initials}
@@ -977,7 +1072,7 @@ async function renderComments(containerId, novelId, chapterId) {
     return;
   }
   listEl.innerHTML = comments.map(c => {
-    const initials = c.profiles.display_name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+    const initials = c.profiles.is_author ? 'S&M' : c.profiles.display_name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
     const myReaction = userReactions[c.id];
     return `
       <div class="comment-card" id="comment-${c.id}">
@@ -1087,44 +1182,58 @@ async function deleteComment(commentId, novelId, chapterId, containerId) {
   showToast('Comment deleted.', 'success');
 }
 
-// ── AUTH ──
+// ── AUTH (OTP) ──
 function openAuth(mode) {
   authMode = mode;
   document.getElementById('auth-modal').classList.add('open');
   document.getElementById('auth-error').classList.remove('show');
-  updateAuthUI();
+  resetOtpFlow();
 }
 function closeAuth() { document.getElementById('auth-modal').classList.remove('open'); }
-function toggleAuth() { authMode = authMode === 'signin' ? 'signup' : 'signin'; updateAuthUI(); }
-function updateAuthUI() {
-  const isSignup = authMode === 'signup';
-  document.getElementById('auth-title').textContent = isSignup ? 'Join for free' : 'Welcome back';
-  document.getElementById('auth-sub').textContent = isSignup ? 'Create an account to comment and subscribe.' : 'Sign in to join the conversation.';
-  document.getElementById('auth-submit').textContent = isSignup ? 'Create account' : 'Sign in';
-  document.getElementById('auth-name-group').style.display = isSignup ? 'block' : 'none';
-  document.getElementById('auth-toggle').innerHTML = isSignup
-    ? 'Already have an account? <button onclick="toggleAuth()">Sign in</button>'
-    : "Don't have an account? <button onclick=\"toggleAuth()\">Join for free</button>";
+
+function toggleAuthName() {
+  const ng = document.getElementById('auth-name-group');
+  const isShowing = ng.style.display !== 'none';
+  ng.style.display = isShowing ? 'none' : 'block';
+  document.getElementById('auth-toggle').innerHTML = isShowing
+    ? 'New here? <button onclick="toggleAuthName()">Set a display name first</button>'
+    : 'Already have an account? <button onclick="toggleAuthName()">Hide name field</button>';
 }
-async function submitAuth() {
+
+function resetOtpFlow() {
+  document.getElementById('auth-step-1').style.display = 'block';
+  document.getElementById('auth-step-2').style.display = 'none';
+  document.getElementById('auth-error').classList.remove('show');
+  document.getElementById('auth-otp').value = '';
+}
+
+async function sendOtp() {
   const email = document.getElementById('auth-email').value.trim();
-  const password = document.getElementById('auth-password').value;
   const errEl = document.getElementById('auth-error');
   errEl.classList.remove('show');
-  if (authMode === 'signup') {
-    const name = document.getElementById('auth-name').value.trim();
-    if (!name) { errEl.textContent = 'Please enter a display name.'; errEl.classList.add('show'); return; }
-    const { error } = await sb.auth.signUp({ email, password, options: { data: { display_name: name } } });
-    if (error) { errEl.textContent = error.message; errEl.classList.add('show'); return; }
-    showToast('Account created! Check your email to confirm.', 'success');
-    closeAuth();
-  } else {
-    const { error } = await sb.auth.signInWithPassword({ email, password });
-    if (error) { errEl.textContent = error.message; errEl.classList.add('show'); return; }
-    showToast('Signed in.', 'success');
-    closeAuth();
-  }
+  if (!email) { errEl.textContent = 'Please enter your email.'; errEl.classList.add('show'); return; }
+  const name = document.getElementById('auth-name').value.trim();
+  const options = name ? { data: { display_name: name } } : {};
+  const { error } = await sb.auth.signInWithOtp({ email, options: { shouldCreateUser: true, ...options } });
+  if (error) { errEl.textContent = error.message; errEl.classList.add('show'); return; }
+  document.getElementById('auth-email-display').textContent = email;
+  document.getElementById('auth-step-1').style.display = 'none';
+  document.getElementById('auth-step-2').style.display = 'block';
+  showToast('Code sent! Check your inbox.', 'success');
 }
+
+async function verifyOtp() {
+  const email = document.getElementById('auth-email').value.trim();
+  const token = document.getElementById('auth-otp').value.trim();
+  const errEl = document.getElementById('auth-error');
+  errEl.classList.remove('show');
+  if (token.length < 6) { errEl.textContent = 'Please enter the full 6-digit code.'; errEl.classList.add('show'); return; }
+  const { error } = await sb.auth.verifyOtp({ email, token, type: 'email' });
+  if (error) { errEl.textContent = 'Invalid or expired code. Try requesting a new one.'; errEl.classList.add('show'); return; }
+  showToast('Signed in!', 'success');
+  closeAuth();
+}
+
 async function signOut() { await sb.auth.signOut(); showToast('Signed out.', 'success'); navigate('home'); }
 
 // ── ADMIN ──
