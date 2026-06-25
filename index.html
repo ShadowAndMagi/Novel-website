@@ -118,153 +118,32 @@ nav {
   text-align: center;
   background: #0E0B18;
 }
-
-/* Deep space gradient — dark top, slightly lighter at horizon centre */
-.sky-bg {
+.sky-photo {
   position: absolute; inset: 0; z-index: 0;
-  background:
-    radial-gradient(ellipse 100% 60% at 50% 50%, #1E1535 0%, #0E0B18 70%);
-}
-
-/* Milky Way core — glowing dust band across the middle */
-.sky-galaxy {
-  position: absolute; inset: 0; z-index: 1; pointer-events: none;
-  /* Core glow — warm violet/gold haze */
-  background:
-    radial-gradient(ellipse 100% 22% at 50% 50%, rgba(180,155,210,0.18) 0%, transparent 100%),
-    radial-gradient(ellipse 80%  14% at 48% 50%, rgba(220,195,240,0.12) 0%, transparent 100%),
-    radial-gradient(ellipse 60%  10% at 52% 50%, rgba(201,168,118,0.07) 0%, transparent 100%);
-  /* Mask: fully visible only in the middle band, fades to nothing at top/bottom */
-  -webkit-mask-image: linear-gradient(to bottom,
-    transparent  0%,
-    transparent 20%,
-    black       38%,
-    black       62%,
-    transparent 80%,
-    transparent 100%
-  );
-  mask-image: linear-gradient(to bottom,
-    transparent  0%,
-    transparent 20%,
-    black       38%,
-    black       62%,
-    transparent 80%,
-    transparent 100%
-  );
-  animation: galaxy-breathe 12s ease-in-out infinite alternate;
-}
-@keyframes galaxy-breathe {
-  from { opacity: 0.85; }
-  to   { opacity: 1; }
-}
-
-/* Aurora above the galaxy band */
-.sky-aurora {
-  position: absolute; inset: 0; z-index: 1; pointer-events: none;
-  background:
-    radial-gradient(ellipse 80% 16% at 25% 28%, rgba(80,210,165,0.06) 0%, transparent 70%),
-    radial-gradient(ellipse 60% 12% at 72% 22%, rgba(100,150,230,0.07) 0%, transparent 70%),
-    radial-gradient(ellipse 50% 10% at 50% 18%, rgba(160,100,220,0.05) 0%, transparent 70%);
-  -webkit-mask-image: linear-gradient(to bottom,
-    transparent  0%,
-    black        8%,
-    black       35%,
-    transparent 50%
-  );
-  mask-image: linear-gradient(to bottom,
-    transparent  0%,
-    black        8%,
-    black       35%,
-    transparent 50%
-  );
-  animation: aurora-shift 16s ease-in-out infinite alternate;
-}
-@keyframes aurora-shift {
-  0%   { opacity: 0.5; transform: translateX(0px);   }
-  50%  { opacity: 0.9; transform: translateX(20px);  }
-  100% { opacity: 0.6; transform: translateX(-15px); }
-}
-
-/* Stars — dense only in the galaxy band, sparse everywhere else */
-.stars {
-  position: absolute; inset: 0; pointer-events: none; z-index: 2;
-}
-
-/* Sparse top/bottom stars */
-.stars-sparse {
-  position: absolute; inset: 0; pointer-events: none;
-  background-image:
-    radial-gradient(1px 1px at 8%   6%,  rgba(232,227,245,0.6), transparent),
-    radial-gradient(1px 1px at 23%  4%,  rgba(232,227,245,0.4), transparent),
-    radial-gradient(1px 1px at 41%  9%,  rgba(232,227,245,0.5), transparent),
-    radial-gradient(1px 1px at 67%  3%,  rgba(232,227,245,0.45),transparent),
-    radial-gradient(1px 1px at 82%  7%,  rgba(232,227,245,0.55),transparent),
-    radial-gradient(1px 1px at 94%  11%, rgba(201,168,118,0.4), transparent),
-    radial-gradient(1px 1px at 14%  88%, rgba(232,227,245,0.4), transparent),
-    radial-gradient(1px 1px at 35%  93%, rgba(232,227,245,0.35),transparent),
-    radial-gradient(1px 1px at 58%  91%, rgba(232,227,245,0.45),transparent),
-    radial-gradient(1px 1px at 76%  96%, rgba(232,227,245,0.4), transparent),
-    radial-gradient(1px 1px at 88%  85%, rgba(155,135,196,0.45),transparent),
-    radial-gradient(1.2px 1.2px at 5%  15%, rgba(232,227,245,0.5), transparent),
-    radial-gradient(1.2px 1.2px at 91% 92%, rgba(232,227,245,0.5), transparent);
-  background-size: 100% 100%;
+  background-image: url('geoffrey-baumbach-W3yv98ULimI-unsplash.jpg');
+  background-size: cover;
+  background-position: center 30%;
   background-repeat: no-repeat;
 }
-
-/* Dense galaxy-band stars — masked to middle only */
-.stars-galaxy {
-  position: absolute; inset: 0; pointer-events: none;
-  background-image:
-    radial-gradient(0.8px 0.8px at 3px   8px,  rgba(232,227,245,0.9), transparent),
-    radial-gradient(0.8px 0.8px at 11px  3px,  rgba(232,227,245,0.7), transparent),
-    radial-gradient(0.8px 0.8px at 19px  14px, rgba(232,227,245,0.8), transparent),
-    radial-gradient(0.8px 0.8px at 27px  6px,  rgba(232,227,245,0.6), transparent),
-    radial-gradient(0.8px 0.8px at 34px  18px, rgba(201,168,118,0.7), transparent),
-    radial-gradient(0.8px 0.8px at 42px  2px,  rgba(232,227,245,0.85),transparent),
-    radial-gradient(0.8px 0.8px at 49px  11px, rgba(232,227,245,0.65),transparent),
-    radial-gradient(0.8px 0.8px at 57px  19px, rgba(155,135,196,0.8), transparent),
-    radial-gradient(0.8px 0.8px at 64px  5px,  rgba(232,227,245,0.75),transparent),
-    radial-gradient(0.8px 0.8px at 71px  15px, rgba(232,227,245,0.9), transparent),
-    radial-gradient(0.8px 0.8px at 79px  8px,  rgba(201,168,118,0.6), transparent),
-    radial-gradient(0.8px 0.8px at 86px  17px, rgba(232,227,245,0.7), transparent),
-    radial-gradient(0.8px 0.8px at 93px  3px,  rgba(232,227,245,0.8), transparent),
-    radial-gradient(1px   1px   at 6px   13px, rgba(232,227,245,0.95),transparent),
-    radial-gradient(1px   1px   at 22px  9px,  rgba(232,227,245,0.85),transparent),
-    radial-gradient(1px   1px   at 38px  16px, rgba(201,168,118,0.8), transparent),
-    radial-gradient(1px   1px   at 53px  4px,  rgba(232,227,245,0.9), transparent),
-    radial-gradient(1px   1px   at 68px  12px, rgba(155,135,196,0.85),transparent),
-    radial-gradient(1px   1px   at 83px  7px,  rgba(232,227,245,0.8), transparent),
-    radial-gradient(1.3px 1.3px at 15px  11px, rgba(232,227,245,1),   transparent),
-    radial-gradient(1.3px 1.3px at 46px  14px, rgba(232,227,245,0.95),transparent),
-    radial-gradient(1.3px 1.3px at 74px  4px,  rgba(201,168,118,0.9), transparent),
-    radial-gradient(1.3px 1.3px at 91px  16px, rgba(232,227,245,1),   transparent);
-  background-repeat: repeat;
-  background-size: 96px 20px;
-  -webkit-mask-image: linear-gradient(to bottom,
-    transparent  0%,
-    transparent 28%,
-    black       40%,
-    black       60%,
-    transparent 72%,
-    transparent 100%
+/* Dark overlay so text stays readable against the bright sky */
+.sky-photo::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(14,11,24,0.35) 0%,
+    rgba(14,11,24,0.25) 40%,
+    rgba(14,11,24,0.55) 75%,
+    rgba(14,11,24,0.85) 100%
   );
-  mask-image: linear-gradient(to bottom,
-    transparent  0%,
-    transparent 28%,
-    black       40%,
-    black       60%,
-    transparent 72%,
-    transparent 100%
-  );
-  animation: drift 140s linear infinite;
 }
-
-@keyframes drift { from { background-position: 0 0; } to { background-position: -96px 0; } }
-@media (prefers-reduced-motion: reduce) {
-  .stars-galaxy { animation: none; }
-  .sky-aurora   { animation: none; }
-  .sky-galaxy   { animation: none; }
+.sky-attribution {
+  position: absolute; bottom: 0.75rem; right: 1rem; z-index: 3;
+  font-size: 0.68rem; color: rgba(232,227,245,0.35);
+  letter-spacing: 0.04em;
 }
+.sky-attribution a { color: rgba(232,227,245,0.35); text-decoration: none; }
+.sky-attribution a:hover { color: rgba(232,227,245,0.6); }
 .hero-inner { position: relative; z-index: 2; padding: 6rem 2rem; max-width: 700px; }
 .eyebrow {
   color: var(--gold); font-size: 0.75rem; letter-spacing: 0.2em;
@@ -604,13 +483,7 @@ h1 .it { font-style: italic; color: var(--gold); }
   <!-- HOME PAGE -->
   <div id="page-home" class="page active">
     <div class="sky">
-      <div class="sky-bg"></div>
-      <div class="sky-galaxy"></div>
-      <div class="sky-aurora"></div>
-      <div class="stars">
-        <div class="stars-sparse"></div>
-        <div class="stars-galaxy"></div>
-      </div>
+      <div class="sky-photo"></div>
       <div class="hero-inner">
         <div class="eyebrow">a quiet corner between dusk and dawn</div>
         <h1>Where white meets black to create <span class="it">beautiful shades of grey</span></h1>
@@ -618,6 +491,9 @@ h1 .it { font-style: italic; color: var(--gold); }
           <button class="btn-hero" onclick="navigate('novels')">Start reading</button>
           <button class="btn-hero-ghost" onclick="navigate('about')">About the author</button>
         </div>
+      </div>
+      <div class="sky-attribution">
+        Photo by <a href="https://unsplash.com/@gbaumbach?utm_source=shadowandmagi" target="_blank" rel="noopener">Geoffrey Baumbach</a> on <a href="https://unsplash.com/?utm_source=shadowandmagi" target="_blank" rel="noopener">Unsplash</a>
       </div>
     </div>
     <hr class="divider">
