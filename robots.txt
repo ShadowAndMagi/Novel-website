@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://shadowandmagi.github.io/Novel-website/sitemap.xml
