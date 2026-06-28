@@ -835,7 +835,7 @@ async function loadNovelDetail(novelId) {
       <div class="novel-detail-meta">
         ${novel.series ? `<span class="series-tag">${escapeHtml(novel.series.title)}</span>` : ''}
         <h2>${escapeHtml(novel.title)}</h2>
-        ${novel.synopsis ? `<p class="synopsis">${escapeHtml(novel.synopsis)}</p>` : ''}
+        ${novel.synopsis ? `<div class="synopsis">${renderMarkdown(novel.synopsis)}</div>` : ''}
         <div class="subscribe-row">
           <span class="tag">${novel.status}</span>
           ${novel.genre ? `<span class="tag">${novel.genre}</span>` : ''}
@@ -1275,7 +1275,7 @@ async function openNovelForm(id) {
         ${(series||[]).map(s => `<option value="${s.id}" ${novel?.series_id === s.id ? 'selected' : ''}>${escapeHtml(s.title)}</option>`).join('')}
       </select>
     </div>
-    <div class="form-group"><label>Synopsis</label><textarea id="f-synopsis" rows="4">${novel ? escapeHtml(novel.synopsis||'') : ''}</textarea></div>
+    <div class="form-group"><label>Synopsis</label><textarea id="f-synopsis" rows="6">${novel ? escapeHtml(novel.synopsis||'') : ''}</textarea><p style="font-size:0.78rem;color:var(--lavender);margin-top:0.35rem">Formatting: **bold**, *italic*, blank line between paragraphs.</p></div>
     <div class="form-group"><label>Genre</label><input id="f-genre" value="${novel ? escapeHtml(novel.genre||'') : ''}"></div>
     <div class="form-group"><label>Cover image URL</label><input id="f-cover" value="${novel ? (novel.cover_url||'') : ''}"></div>
     <div class="form-group"><label>Status</label>
@@ -1521,6 +1521,16 @@ function submitFormModal() { if (formModalCallback) formModalCallback(); }
 function escapeHtml(str) {
   if (!str) return '';
   return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function renderMarkdown(str) {
+  if (!str) return '';
+  return str
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g, '<em>$1</em>')
+    .split(/\n\n+/)
+    .map(p => `<p style="margin-bottom:1rem">${p.replace(/\n/g, '<br>')}</p>`)
+    .join('');
 }
 function formatDate(iso) {
   return new Date(iso).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
